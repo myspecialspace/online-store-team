@@ -1,0 +1,47 @@
+@import '../styles/vars.scss';
+
+.root-page {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+
+  header {
+    height: 80px;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 12px;
+    display: flex;
+  }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-family: cursive;
+  }
+
+  #router {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  footer {
+    height: 100px;
+    background-color: aliceblue;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .footer-item+.footer-item {
+    margin-left: 6px;
+  }
+
+  .course-logo {
+    height: 64px;
+  }
+}
