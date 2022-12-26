@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CatalogItemComponent } from "../../components/catalog-item";
 import { api } from "../../helpers/api";
 import { ProductsResponse } from "../../helpers/api/types";

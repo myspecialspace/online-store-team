@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component } from "../helpers/component";
 import { router } from "../helpers/router";
 import "./index.scss";
