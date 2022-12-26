@@ -1,0 +1,27 @@
+.catalog-item {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  position: relative;
+
+  &:hover .additional {
+    visibility: visible;
+  }
+
+  .pic {
+    width: 200px;
+    height: 300px;
+    object-fit: contain;
+  }
+
+  .additional {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    visibility: hidden;
+    background-color: rgba(255, 255, 255, 0.687);
+    padding: 10px 20px;
+    border-radius: 6px;
+  }
+
+}

@@ -1,0 +1,22 @@
+.catalog-page {
+  display: flex;
+
+  .filters {
+    width: 400px;
+    background-color: #ddd;
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex-grow: 1;
+  }
+
+  .catalog-items {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .catalog-item {
+    width: 25%;
+  }
+}

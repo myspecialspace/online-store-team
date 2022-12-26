@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   EventName,
   Listener,
@@ -13,7 +15,7 @@ export class Component<TState = null> {
   private _listeners: Listener[] = [];
   private isMounted = false;
   private _templateDom: HTMLDivElement;
-  private $root: HTMLElement | null = null;
+  public $root: HTMLElement | null = null;
 
   constructor(options: Options<TState>) {
     this._state = options.state || ({} as TState);

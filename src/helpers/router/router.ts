@@ -1,4 +1,4 @@
-import { CatalogPage } from "../../catalog";
+import { CatalogPage } from "../../pages/catalog";
 import { RouterPaths } from "./constants";
 import { RouterConfig, Route, RouterCallback } from "./types";
 
