@@ -1,4 +1,5 @@
-export interface Options<TState> { //component Options
+export interface Options<TState> {
+  //component Options
   state?: TState;
   template: string;
 }

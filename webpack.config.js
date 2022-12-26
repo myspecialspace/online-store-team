@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
-
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -28,7 +28,7 @@ const config = {
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
@@ -50,11 +50,11 @@ const config = {
       },
       {
         test: /\.html$/,
-        use: ['html-loader'],
+        use: ["html-loader"],
       },
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
 

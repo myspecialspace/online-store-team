@@ -2,6 +2,14 @@
 /*
 надо сказать, что import html файла - это модуль который возвращает строку
 */
-declare module '*.html' {
+declare module "*.html" {
   export default typeof String;
 }
+
+// declare module "*.svg?inline" {
+//   export default content;
+// }
+
+// declare module "*.svg" {
+//   export default content;
+// }

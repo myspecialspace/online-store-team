@@ -1,7 +1,6 @@
-import { CatalogPage } from "../../catalog";
+import { CatalogPage } from "../../pages/catalog";
 import { RouterPaths } from "./constants";
 import { RouterConfig, Route, RouterCallback } from "./types";
-
 
 class Router {
   private _config: RouterConfig;
@@ -23,7 +22,7 @@ class Router {
   }
 
   setPage(name: RouterPaths) {
-    if (name !== this._currentPage?.name)  {
+    if (name !== this._currentPage?.name) {
       //засетить из _findPage в _currentPage и вызвать колбэки из onChange
       this._currentPage = this._findPage(name) || null;
       this._emitCallbacks();
