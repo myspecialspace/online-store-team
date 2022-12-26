@@ -1,5 +1,5 @@
 export enum RouterPaths {
-    CATALOG = 'catalog',
-    PRODUCT_DETAILS = 'product-details/:id',
-    CART = 'cart',
-};
+  CATALOG = "catalog",
+  PRODUCT_DETAILS = "product-details/:id",
+  CART = "cart",
+}

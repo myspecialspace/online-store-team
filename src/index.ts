@@ -1,6 +1,5 @@
-import { RootComponent } from './root';
-import './styles/index.scss';
-
+import { RootComponent } from "./root";
+import "./styles/index.scss";
 
 const root = new RootComponent();
-root.render('#app');
+root.render("#app");

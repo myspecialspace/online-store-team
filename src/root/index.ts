@@ -1,9 +1,7 @@
-import { Component } from '../helpers/component';
-import { router } from '../helpers/router';
-import './index.scss';
-import template from './template.html';
-
-
+import { Component } from "../helpers/component";
+import { router } from "../helpers/router";
+import "./index.scss";
+import template from "./template.html";
 
 export class RootComponent extends Component {
   private component: Component | null = null;
@@ -24,10 +22,10 @@ export class RootComponent extends Component {
   }
   //onMounted вызывается в хуке helpers/component/component.ts  _callHook
   onMounted() {
-    console.log('this', this);
+    console.log("this", this);
     //созд.роутер => отрисовка в template.html по id
     //query достанет html элемент
-    this.$router = this.query('#router');
+    this.$router = this.query("#router");
 
     this.updateComponent(router.getCurrentPage());
 
