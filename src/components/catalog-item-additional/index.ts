@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Product } from "../../helpers/api/types";
 import { Component } from "../../helpers/component";
 import "./index.scss";

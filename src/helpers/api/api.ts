@@ -4,7 +4,7 @@ class Api {
   readonly baseUrl = "https://dummyjson.com";
 
   public getProducts() {
-    const query = "?" + this.getQuery({ limit: "100" });
+    const query = "?" + this.getQuery({ limit: "30" });
     return this.request<ProductsResponse>("/products" + query);
   }
 

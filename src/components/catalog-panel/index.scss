@@ -1,0 +1,32 @@
+.catalog-panel {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+
+  .grid-settings {
+    display: flex;
+
+    .button {
+      border: 2px solid transparent;
+      border-radius: 6px;
+      padding: 2px;
+      display: flex;
+      cursor: pointer;
+
+      &.active {
+        border-color: blue;
+      }
+
+      img {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .button + .button {
+      margin-left: 4px;
+    }
+  }
+}

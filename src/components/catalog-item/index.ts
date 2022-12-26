@@ -52,7 +52,7 @@ export class CatalogItemComponent extends Component<Product> {
     });
 
     this.$detailsButton?.addEventListener("click", () => {
-      // router.setPage(RouterPaths.PRODUCT_DETAILS);
+      //router.setPage(RouterPaths.PRODUCT_DETAILS);
     });
   }
 }
