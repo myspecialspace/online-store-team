@@ -24,7 +24,7 @@ export class Component<TState = null> {
     this._templateDom.innerHTML = this._template;
   }
 
-  set state(patch) {
+  set state(patch: Partial<TState>) {
     this._state = {
       ...this._state,
       ...patch,
@@ -35,7 +35,7 @@ export class Component<TState = null> {
     }
   }
 
-  get state() {
+  get state(): TState {
     return this._state;
   }
 
@@ -78,9 +78,10 @@ export class Component<TState = null> {
 
   on(name: EventName, fn: ListenerFn) {
     this._listeners.push({ name, fn });
+    return this;
   }
 
-  emit(name: EventName, data: ListenerFnData) {
+  emit(name: EventName, data?: ListenerFnData) {
     this._listeners.forEach((listener) => {
       if (listener.name === name) {
         listener.fn(data);

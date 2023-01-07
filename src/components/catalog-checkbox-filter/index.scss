@@ -1,0 +1,9 @@
+.catalog-filters {
+  display: flex;
+  flex-flow: column;
+
+  .list {
+    height: 350px;
+    overflow: auto;
+  }
+}

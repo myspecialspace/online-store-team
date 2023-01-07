@@ -10,6 +10,10 @@ declare module "*.png" {
   export default typeof String;
 }
 
+declare module "*.webp" {
+  export default typeof String;
+}
+
 declare module "*.svg?inline" {
   export default content;
 }

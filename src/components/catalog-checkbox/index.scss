@@ -1,0 +1,16 @@
+.catalog-checkbox {
+  display: flex;
+  justify-content: space-between;
+
+  .name {
+    display: flex;
+    cursor: pointer;
+  }
+
+  &.not_found {
+    .label,
+    .count {
+      opacity: .3;
+    }
+  }
+}
