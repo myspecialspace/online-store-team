@@ -3,10 +3,11 @@ import "./index.scss";
 import template from "./template.html";
 import bigIcon from "../../assets/grid-big.png";
 import smallIcon from "../../assets/grid-small.png";
-import { CatalogPanelEvents } from "./types";
+import { CatalogPanelEvents, ViewType } from "./types";
 
 type State = {
   limit: number;
+  view: ViewType;
 };
 
 export class CatalogPanelComponent extends Component<State> {
@@ -42,6 +43,11 @@ export class CatalogPanelComponent extends Component<State> {
 
   onUpdated() {
     this.$total!.textContent = "Found: " + this.state.limit;
+
+    [this.$buttonBig, this.$buttonSmall].forEach((button) => {
+      const type = button!.dataset.type;
+      button?.classList.toggle("active", type === this.state.view);
+    });
   }
 
   addEvents() {

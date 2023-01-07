@@ -4,7 +4,7 @@ class Api {
   readonly baseUrl = "https://dummyjson.com";
 
   public getProducts() {
-    const query = "?" + this.getQuery({ limit: "30" });
+    const query = "?" + this.getQuery({ limit: "100" });
     return this.request<ProductsResponse>("/products" + query);
   }
 
@@ -15,7 +15,7 @@ class Api {
     const res = await fetch(this.baseUrl + url, options);
     const json = await res.json();
     return json;
-    //TODO error handling
+    // TODO error handling
   }
 
   private getQuery(data: Record<string, string>): string {

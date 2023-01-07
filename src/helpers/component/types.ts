@@ -10,5 +10,5 @@ export interface Listener {
 }
 
 export type EventName = string;
-export type ListenerFn = (data: ListenerFnData) => any; //TODO
-export type ListenerFnData = any; //TODO
+export type ListenerFn = (data: ListenerFnData) => any; // TODO;
+export type ListenerFnData = any; // TODO
