@@ -10,7 +10,7 @@ import { Component } from "../../helpers/component";
 import { router } from "../../helpers/router";
 import "./index.scss";
 import template from "./template.html";
-import { FilterField } from "./constants";
+import { FilterField, parseOptions } from "./constants";
 import {
   CatalogPanelEvents,
   ViewType,
@@ -18,6 +18,9 @@ import {
 import { CatalogItemSmallComponent } from "../../components/catalog-item-small";
 import { CatalogFiltersEvent } from "../../components/catalog-filters/types";
 import { RangeValue } from "../../components/catalog-range-filter/types";
+import { RouterPaths } from "../../helpers/router/constants";
+import { parseQuery, queryStringify } from "../../helpers/api/router";
+import { QueryName } from "./types";
 
 export class CatalogPage extends Component {
   itemComponents: Array<CatalogItemComponent | CatalogItemSmallComponent> = [];
@@ -50,6 +53,8 @@ export class CatalogPage extends Component {
 
   constructor() {
     super({ template });
+
+    this.updateFilterFromUrl();
   }
 
   async onMounted() {
@@ -79,14 +84,17 @@ export class CatalogPage extends Component {
         this.sortField = values[0] as typeof this.sortField;
         this.sortType = values[1] as typeof this.sortType;
         this.makeSort(value);
+        this.setFilterToUrl();
       })
       .on(CatalogPanelEvents.SEARCH, (value) => {
         this.searchValue = value;
         this.filterAndSearchProducts();
         this.updateFilters();
+        this.setFilterToUrl();
       })
       .on(CatalogPanelEvents.VIEW, (type) => {
         this.updateViewType(type);
+        this.setFilterToUrl();
       });
 
     this.panelComponent.render(this.$panel!);
@@ -121,6 +129,7 @@ export class CatalogPage extends Component {
     this.filtersComponent.on(CatalogFiltersEvent.CHANGE, (filter) => {
       this.currentFilter = filter;
       this.filterAndSearchProducts();
+      this.setFilterToUrl();
     });
   }
 
@@ -263,5 +272,36 @@ export class CatalogPage extends Component {
 
       this.visibleProducts.push(product);
     }
+  }
+
+  setFilterToUrl(): void {
+    const data = {
+      [QueryName.CATEGORIES]: this.currentFilter.categories,
+      [QueryName.BRANDS]: this.currentFilter.brands,
+      [QueryName.PRICE_FROM]: this.currentFilter.price.from,
+      [QueryName.PRICE_TO]: this.currentFilter.price.to,
+      [QueryName.STOCK_FROM]: this.currentFilter.stock.from,
+      [QueryName.STOCK_TO]: this.currentFilter.stock.to,
+      [QueryName.SORT_TYPE]: this.sortType,
+      [QueryName.SORT_FIELD]: this.sortField,
+      [QueryName.SEARCH]: this.searchValue,
+      [QueryName.VIEW]: this.viewType,
+    };
+
+    const qs = "?" + queryStringify(data);
+    const url = "/" + RouterPaths.CATALOG + qs;
+    router.setPage(url);
+  }
+
+  updateFilterFromUrl(): void {
+    const queryData = parseQuery(parseOptions);
+    console.log("queryData", queryData);
+
+    // TODO
+    // this.sortType = queryData.sort_type;
+    // this.currentFilter = {
+    //   brands: queryData[QueryName.BRANDS],
+    //   categories: queryData[QueryName.CATEGORIES],
+    // }
   }
 }
