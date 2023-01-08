@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Product } from "../../helpers/api/types";
 import { Component } from "../../helpers/component";
 import { router } from "../../helpers/router";
@@ -52,7 +50,7 @@ export class CatalogItemComponent extends Component<Product> {
     });
 
     this.$detailsButton?.addEventListener("click", () => {
-      // router.setPage(RouterPaths.PRODUCT_DETAILS);
+      router.setPage(RouterPaths.DETAILS);
     });
   }
 }

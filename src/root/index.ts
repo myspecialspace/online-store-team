@@ -32,7 +32,7 @@ export class RootComponent extends Component {
     //query достанет html элемент
     this.$router = this.query("#router");
 
-    this.updateComponent(router.getCurrentPage());
+    this.updateComponent(router.getCurrentRoute());
 
     router.onChange((page: any) => {
       this.updateComponent(page);

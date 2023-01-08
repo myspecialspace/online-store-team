@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Product } from "../../helpers/api/types";
 import { Component } from "../../helpers/component";
 import "./index.scss";
@@ -7,7 +6,7 @@ import {
   State as RowState,
   CatalogItemAdditionalRowComponent,
 } from "../catalog-item-additional-row";
-//верхняя информация на карточке
+
 export class CatalogItemAdditionalComponent extends Component<Product> {
   rowComponents: CatalogItemAdditionalRowComponent[] = [];
   rows: RowState[] = [];

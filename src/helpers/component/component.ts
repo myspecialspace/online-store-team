@@ -97,7 +97,7 @@ export class Component<TState = null> {
     const hook = this[name];
 
     if (typeof hook === "function") {
-      hook.call(this); //вызов в контексте иначе теряется
+      hook.call(this);
     }
   }
 }
