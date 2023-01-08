@@ -8,14 +8,14 @@ import {
 import { CatalogCheckboxFilterEvent } from "../catalog-checkbox-filter/types";
 import { CatalogFiltersEvent } from "./types";
 import { CatalogRangeFilterComponent } from "../catalog-range-filter";
-import {
-  CatalogRangeFilterEvent,
-  RangeValue,
-} from "../catalog-range-filter/types";
+import { CatalogRangeFilterEvent } from "../catalog-range-filter/types";
+import { State as CatalogRangeFilterState } from "../catalog-range-filter";
 
 type State = {
   category: CheckboxFilterState;
   brand: CheckboxFilterState;
+  price: CatalogRangeFilterState;
+  stock: CatalogRangeFilterState;
 };
 
 export class CatalogFiltersComponent extends Component<State> {
@@ -24,6 +24,7 @@ export class CatalogFiltersComponent extends Component<State> {
   $price: HTMLDivElement | null = null;
   $stock: HTMLDivElement | null = null;
   $reset: HTMLButtonElement | null = null;
+  $copy: HTMLButtonElement | null = null;
 
   categoryComponent: CatalogCheckboxFilterComponent | null = null;
   brandComponent: CatalogCheckboxFilterComponent | null = null;
@@ -32,8 +33,8 @@ export class CatalogFiltersComponent extends Component<State> {
 
   selectedBrands: string[] = [];
   selectedCategories: string[] = [];
-  price: RangeValue = { from: 10, to: 1749 }; // TODO
-  stock: RangeValue = { from: 2, to: 150 }; // TODO
+  price: CatalogRangeFilterState | null = null;
+  stock: CatalogRangeFilterState | null = null;
 
   constructor(state: State) {
     super({ template, state });
@@ -45,6 +46,7 @@ export class CatalogFiltersComponent extends Component<State> {
     this.$price = this.query(".price");
     this.$stock = this.query(".stock");
     this.$reset = this.query(".reset");
+    this.$copy = this.query(".copy");
 
     this.createCategoryFilter();
     this.createBrandFilter();
@@ -57,6 +59,11 @@ export class CatalogFiltersComponent extends Component<State> {
   onUpdated() {
     this.categoryComponent!.state = this.state.category;
     this.brandComponent!.state = this.state.brand;
+    this.priceComponent!.state = this.state.price;
+    this.stockComponent!.state = this.state.stock;
+
+    this.price = this.state.price;
+    this.stock = this.state.stock;
   }
 
   createCategoryFilter() {
@@ -80,11 +87,7 @@ export class CatalogFiltersComponent extends Component<State> {
   }
 
   createPriceFilter() {
-    this.priceComponent = new CatalogRangeFilterComponent({
-      min: 10,
-      max: 1749,
-      title: "Price",
-    });
+    this.priceComponent = new CatalogRangeFilterComponent(this.state.price);
     this.priceComponent.render(this.$price!);
     this.priceComponent.on(CatalogRangeFilterEvent.CHANGE, (data) => {
       this.price = data;
@@ -93,11 +96,7 @@ export class CatalogFiltersComponent extends Component<State> {
   }
 
   createStockFilter() {
-    this.stockComponent = new CatalogRangeFilterComponent({
-      min: 2,
-      max: 150,
-      title: "Stock",
-    });
+    this.stockComponent = new CatalogRangeFilterComponent(this.state.stock);
     this.stockComponent.render(this.$stock!);
     this.stockComponent.on(CatalogRangeFilterEvent.CHANGE, (data) => {
       this.stock = data;
@@ -118,7 +117,14 @@ export class CatalogFiltersComponent extends Component<State> {
     this.$reset!.addEventListener("click", () => {
       this.selectedBrands = [];
       this.selectedCategories = [];
-      this.emitChange();
+      this.price = null;
+      this.stock = null;
+
+      this.emit(CatalogFiltersEvent.RESET);
+    });
+
+    this.$copy!.addEventListener("click", () => {
+      this.emit(CatalogFiltersEvent.COPY);
     });
   }
 }

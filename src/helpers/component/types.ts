@@ -10,5 +10,11 @@ export interface Listener {
 }
 
 export type EventName = string;
-export type ListenerFn = (data: ListenerFnData) => any; // TODO;
+export type ListenerFn = (data: ListenerFnData) => unknown;
 export type ListenerFnData = any; // TODO
+
+export enum Hooks {
+  ON_MOUNTED = "onMounted",
+  ON_UPDATED = "onUpdated",
+  ON_DESTROYED = "onDestroyed",
+}

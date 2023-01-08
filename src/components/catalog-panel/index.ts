@@ -4,14 +4,18 @@ import template from "./template.html";
 import bigIcon from "../../assets/grid-big.png";
 import smallIcon from "../../assets/grid-small.png";
 import { CatalogPanelEvents, ViewType } from "./types";
+import { SortField, SortType } from "../../pages/catalog/types";
 
 type State = {
   limit: number;
   view: ViewType;
+  search: string;
+  sortType: SortType;
+  sortField: SortField;
 };
 
 export class CatalogPanelComponent extends Component<State> {
-  $select: HTMLSelectElement | null = null;
+  $sort: HTMLSelectElement | null = null;
   $total: HTMLDivElement | null = null;
   $search: HTMLInputElement | null = null;
   $buttonSmall: HTMLInputElement | null = null;
@@ -27,7 +31,7 @@ export class CatalogPanelComponent extends Component<State> {
   }
 
   onMounted() {
-    this.$select = this.query(".sort");
+    this.$sort = this.query(".sort");
     this.$total = this.query(".total");
     this.$search = this.query(".search");
 
@@ -48,11 +52,14 @@ export class CatalogPanelComponent extends Component<State> {
       const type = button!.dataset.type;
       button?.classList.toggle("active", type === this.state.view);
     });
+
+    this.$search!.value = this.state.search;
+    this.$sort!.value = `${this.state.sortField}-${this.state.sortType}`;
   }
 
   addEvents() {
-    this.$select!.addEventListener("change", () => {
-      this.emit(CatalogPanelEvents.SORT, this.$select!.value);
+    this.$sort!.addEventListener("change", () => {
+      this.emit(CatalogPanelEvents.SORT, this.$sort!.value);
     });
 
     this.$search!.addEventListener("input", () => {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CatalogFiltersComponent } from "../../components/catalog-filters";
 import { CatalogItemComponent } from "../../components/catalog-item";
 import { CatalogPanelComponent } from "../../components/catalog-panel";
@@ -20,7 +19,7 @@ import { CatalogFiltersEvent } from "../../components/catalog-filters/types";
 import { RangeValue } from "../../components/catalog-range-filter/types";
 import { RouterPaths } from "../../helpers/router/constants";
 import { parseQuery, queryStringify } from "../../helpers/api/router";
-import { QueryName } from "./types";
+import { QueryName, QueryValues, SortField, SortType } from "./types";
 
 export class CatalogPage extends Component {
   itemComponents: Array<CatalogItemComponent | CatalogItemSmallComponent> = [];
@@ -33,9 +32,10 @@ export class CatalogPage extends Component {
   $items: HTMLElement | null = null;
   $panel: HTMLElement | null = null;
   $filters: HTMLElement | null = null;
+  $noResults: HTMLDivElement | null = null;
 
-  sortType: "ASC" | "DESC" = "ASC";
-  sortField: "price" | "rating" | "discountPercentage" = "price";
+  sortType: SortType = SortType.ASC;
+  sortField: SortField = SortField.PRICE;
   viewType: ViewType = ViewType.BIG;
   readonly FILTER_INITIAL = {
     brands: [],
@@ -53,14 +53,13 @@ export class CatalogPage extends Component {
 
   constructor() {
     super({ template });
-
-    this.updateFilterFromUrl();
   }
 
   async onMounted() {
     this.$items = this.query(".catalog-items");
     this.$panel = this.query(".panel");
     this.$filters = this.query(".filters");
+    this.$noResults = this.query(".no-results");
 
     this.data = await api.getProducts();
     this.visibleProducts = this.data.products;
@@ -69,13 +68,19 @@ export class CatalogPage extends Component {
     this.createProducts();
     this.createFilters();
     this.updateViewType(this.viewType);
-    //console.log("res", res); - проверка подгрузки данных
+
+    this.updateFilterFromUrl();
+    this.filterAndSearchProducts();
+    this.updateFilters();
   }
-  //создаем панель над карточками где поиск
+
   createPanel() {
     this.panelComponent = new CatalogPanelComponent({
       limit: this.visibleProducts.length,
       view: this.viewType,
+      search: this.searchValue,
+      sortField: this.sortField,
+      sortType: this.sortType,
     });
 
     this.panelComponent
@@ -83,7 +88,7 @@ export class CatalogPage extends Component {
         const values = value.split("-");
         this.sortField = values[0] as typeof this.sortField;
         this.sortType = values[1] as typeof this.sortType;
-        this.makeSort(value);
+        this.makeSort();
         this.setFilterToUrl();
       })
       .on(CatalogPanelEvents.SEARCH, (value) => {
@@ -99,7 +104,7 @@ export class CatalogPage extends Component {
 
     this.panelComponent.render(this.$panel!);
   }
-  //создаем карточки с продуктами
+
   createProducts() {
     this.visibleProducts.forEach((product) => {
       const itemComponent =
@@ -123,20 +128,44 @@ export class CatalogPage extends Component {
   createFilters() {
     const brand = this.getBrandFilter();
     const category = this.getCategoryFilter();
-    this.filtersComponent = new CatalogFiltersComponent({ brand, category });
+    const price = this.getPriceFilter();
+    const stock = this.getStockFilter();
+    this.filtersComponent = new CatalogFiltersComponent({
+      brand,
+      category,
+      price,
+      stock,
+    });
     this.filtersComponent.render(this.$filters!);
 
-    this.filtersComponent.on(CatalogFiltersEvent.CHANGE, (filter) => {
-      this.currentFilter = filter;
-      this.filterAndSearchProducts();
-      this.setFilterToUrl();
-    });
+    this.filtersComponent
+      .on(CatalogFiltersEvent.CHANGE, (filter) => {
+        this.currentFilter = filter;
+        this.filterAndSearchProducts();
+        this.setFilterToUrl();
+      })
+      .on(CatalogFiltersEvent.RESET, () => {
+        this.resetFilter();
+      })
+      .on(CatalogFiltersEvent.COPY, () => {
+        this.copyFilter();
+      });
   }
 
   updateFilters() {
     const brand = this.getBrandFilter();
     const category = this.getCategoryFilter();
-    this.filtersComponent!.state = { brand, category };
+    const price = this.getPriceFilter();
+    const stock = this.getStockFilter();
+
+    this.filtersComponent!.state = { brand, category, stock, price };
+
+    this.panelComponent!.state = {
+      search: this.searchValue,
+      sortField: this.sortField,
+      sortType: this.sortType,
+      view: this.viewType,
+    };
   }
 
   getBrandFilter() {
@@ -145,6 +174,26 @@ export class CatalogPage extends Component {
 
   getCategoryFilter() {
     return this.getFilter(FilterField.CATEGORY, "Category");
+  }
+
+  getStockFilter() {
+    return {
+      min: 2,
+      max: 150,
+      from: this.currentFilter.stock.from,
+      to: this.currentFilter.stock.to,
+      title: "Stock",
+    };
+  }
+
+  getPriceFilter() {
+    return {
+      min: 10,
+      max: 1749,
+      from: this.currentFilter.price.from,
+      to: this.currentFilter.price.to,
+      title: "Price",
+    };
   }
 
   getFilter(fieldName: FilterField, title: string): CheckboxFilterState {
@@ -184,15 +233,15 @@ export class CatalogPage extends Component {
     return selected.includes(value);
   }
 
-  makeSort(value: string) {
-    this.sortVisibleProducts(value);
+  makeSort() {
+    this.sortVisibleProducts();
     this.destroyProducts();
     this.createProducts();
   }
 
-  sortVisibleProducts(value: string) {
+  sortVisibleProducts() {
     this.visibleProducts.sort((a, b) => {
-      if (this.sortType === "DESC") {
+      if (this.sortType === SortType.DESC) {
         return a[this.sortField] - b[this.sortField];
       } else {
         return b[this.sortField] - a[this.sortField];
@@ -224,6 +273,11 @@ export class CatalogPage extends Component {
     this.panelComponent!.state = {
       limit: this.visibleProducts.length,
     };
+
+    this.$noResults?.classList.toggle(
+      "visible",
+      this.visibleProducts.length === 0
+    );
   }
 
   filterAndSearchProducts(): void {
@@ -238,7 +292,7 @@ export class CatalogPage extends Component {
     this.visibleProducts = [];
 
     const { categories, brands, price, stock } = this.currentFilter;
-    const searchFields: (keyof Product)[] = ["title"]; // TODO more fields
+    const searchFields: (keyof Product)[] = ["title", "description"];
 
     for (const product of this.data?.products || []) {
       if (categories.length && !categories.includes(product.category)) {
@@ -294,14 +348,40 @@ export class CatalogPage extends Component {
   }
 
   updateFilterFromUrl(): void {
-    const queryData = parseQuery(parseOptions);
-    console.log("queryData", queryData);
+    const queryData = parseQuery(parseOptions) as QueryValues;
 
-    // TODO
-    // this.sortType = queryData.sort_type;
-    // this.currentFilter = {
-    //   brands: queryData[QueryName.BRANDS],
-    //   categories: queryData[QueryName.CATEGORIES],
-    // }
+    this.currentFilter = {
+      brands: queryData[QueryName.BRANDS] || this.FILTER_INITIAL.brands,
+      categories:
+        queryData[QueryName.CATEGORIES] || this.FILTER_INITIAL.categories,
+      price: {
+        from: queryData[QueryName.PRICE_FROM] || this.FILTER_INITIAL.price.from,
+        to: queryData[QueryName.PRICE_TO] || this.FILTER_INITIAL.price.to,
+      },
+      stock: {
+        from: queryData[QueryName.STOCK_FROM] || this.FILTER_INITIAL.stock.from,
+        to: queryData[QueryName.STOCK_TO] || this.FILTER_INITIAL.stock.to,
+      },
+    };
+
+    this.sortType = queryData[QueryName.SORT_TYPE] || SortType.ASC;
+    this.sortField = queryData[QueryName.SORT_FIELD] || SortField.PRICE;
+    this.searchValue = queryData[QueryName.SEARCH] || "";
+    this.viewType = queryData[QueryName.VIEW] || ViewType.BIG;
+  }
+
+  resetFilter() {
+    router.setPage(RouterPaths.CATALOG);
+    this.updateFilterFromUrl();
+    this.filterAndSearchProducts();
+    this.updateFilters();
+  }
+
+  async copyFilter() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
   }
 }
