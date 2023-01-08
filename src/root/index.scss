@@ -11,6 +11,8 @@
     border-bottom: 1px solid #ddd;
     padding: 8px 12px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .logo {
@@ -19,6 +21,17 @@
     align-items: center;
     font-size: 40px;
     font-family: cursive;
+    text-decoration: none;
+    color: black;
+  }
+
+  .cart-total {
+    display: flex;
+  }
+
+  .cart {
+    font-size: 24px;
+    text-decoration: none;
   }
 
   #router {
@@ -33,7 +46,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
   }
 
   .footer-item+.footer-item {
@@ -41,6 +53,6 @@
   }
 
   .course-logo {
-    height: 50px;
+    height: 64px;
   }
 }

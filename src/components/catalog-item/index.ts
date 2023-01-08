@@ -1,4 +1,5 @@
 import { Product } from "../../helpers/api/types";
+import { cart } from "../../helpers/cart";
 import { Component } from "../../helpers/component";
 import { router } from "../../helpers/router";
 import { RouterPaths } from "../../helpers/router/constants";
@@ -14,6 +15,7 @@ export class CatalogItemComponent extends Component<Product> {
   $addToCartButton: HTMLButtonElement | null = null;
   $detailsButton: HTMLButtonElement | null = null;
   additionalComponent: CatalogItemAdditionalComponent | null = null;
+  inCart = false;
 
   constructor(state: Product) {
     super({ template, state });
@@ -46,7 +48,15 @@ export class CatalogItemComponent extends Component<Product> {
 
   addEvents() {
     this.$addToCartButton?.addEventListener("click", () => {
-      // TODO set store
+      if (this.inCart) {
+        cart.decrementItem(this.state.id);
+        this.$addToCartButton!.textContent = 'ADD TO CART';
+      } else {
+        cart.incrementItem(this.state.id);
+        this.$addToCartButton!.textContent = 'DROP FROM CART';
+      }
+
+      this.inCart = !this.inCart;
     });
 
     this.$detailsButton?.addEventListener("click", () => {

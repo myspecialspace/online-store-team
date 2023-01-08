@@ -1,5 +1,4 @@
 export interface Options<TState> {
-  //component Options
   state?: TState;
   template: string;
 }

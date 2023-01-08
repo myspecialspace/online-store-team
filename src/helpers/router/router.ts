@@ -3,14 +3,13 @@ import { RouterConfig, Route, RouterCallback, ComponentType } from "./types";
 import { RouterPaths } from "./constants";
 import { NotFoundPage } from "../../pages/not-found";
 import { DetailsPage } from "../../pages/details";
+import { CartPage } from "../../pages/cart";
 
 class Router {
   private _config: RouterConfig;
   private _currentRoute: Route | null = null;
   private _callbacks: RouterCallback[];
   private _NotFoundPage: ComponentType;
-  // _callbacks массив колбэков, в качестве вызова в компоненте onChange => подписываемся через эти колбэки на изменения роута
-  // например вызываем onChange передаем в нее функцию
 
   constructor(config: RouterConfig, NotFoundPage: ComponentType) {
     this._config = config;
@@ -23,10 +22,7 @@ class Router {
       this.setPage(window.location.pathname + window.location.search);
     });
   }
-  /*
-  сюда передаем и эта функция вызовется, когда произойдет изменение роута => в root в router.onChange мы получим вызов этой стрелочной функции.
-  при изменении роута можно логику сделать нужную (изменение параметров url, при загрузке страницы что-то делать)
-  */
+
   onChange(fn: RouterCallback) {
     this._callbacks.push(fn);
   }
@@ -82,10 +78,10 @@ const config: RouterConfig = [
     name: RouterPaths.DETAILS,
     component: DetailsPage,
   },
-  // {
-  //   name: RouterPaths.CART,
-  //   component: CartPage,
-  // },
+  {
+    name: RouterPaths.CART,
+    component: CartPage,
+  },
 ];
 
 export const router = new Router(config, NotFoundPage);
