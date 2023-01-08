@@ -1,4 +1,4 @@
-export const queryStringify = <T extends Record<string, unknown> = {}>(
+export const queryStringify = <T extends Record<string, unknown>>(
   data: T
 ): string => {
   const pairs: string[] = [];
@@ -32,14 +32,13 @@ export enum ParseType {
   ARRAY = "array",
 }
 
-export const parseQuery = (
-  options: ParseOptions
-): Record<string, QueryValue> => {
+// TODO types
+export const parseQuery = (options: ParseOptions): any => {
   const search = window.location.search.slice(1);
 
   const pairs = search.split("&");
 
-  const result: Record<string, QueryValue> = {};
+  const result: any = {};
 
   pairs.forEach((pair) => {
     const [key, rawValue] = pair.split("=");

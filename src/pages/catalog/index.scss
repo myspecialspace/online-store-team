@@ -31,4 +31,14 @@
       width: calc(100% / 6);
     }
   }
+
+  .no-results {
+    visibility: hidden;
+    text-align: center;
+    margin-top: 20px;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
 }

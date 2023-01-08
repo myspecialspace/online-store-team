@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   EventName,
+  Hooks,
   Listener,
   ListenerFn,
   ListenerFnData,
@@ -31,7 +30,7 @@ export class Component<TState = null> {
     };
 
     if (this.isMounted) {
-      this._callHook("onUpdated");
+      this._callHook(Hooks.ON_UPDATED);
     }
   }
 
@@ -59,15 +58,15 @@ export class Component<TState = null> {
 
     this.isMounted = true;
 
-    this._callHook("onMounted");
+    this._callHook(Hooks.ON_MOUNTED);
   }
 
   destroy() {
     this.$root!.remove();
     this._listeners = [];
-    this._callHook("onDestroyed");
+    this._callHook(Hooks.ON_DESTROYED);
   }
-  // у query и queryAll  дженерик должен быть тут именно Element
+
   query<TElement extends Element>(selector: string) {
     return this.$root!.querySelector<TElement>(selector);
   }
@@ -89,12 +88,8 @@ export class Component<TState = null> {
     });
   }
 
-  onMounted() {}
-  onUpdated() {}
-  onDestroyed() {}
-
-  _callHook(name: keyof this) {
-    const hook = this[name];
+  _callHook(hookName: Hooks) {
+    const hook = this[hookName as keyof this];
 
     if (typeof hook === "function") {
       hook.call(this);

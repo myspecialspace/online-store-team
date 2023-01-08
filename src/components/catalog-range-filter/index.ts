@@ -6,6 +6,8 @@ import { CatalogRangeFilterEvent } from "./types";
 export type State = {
   min: number;
   max: number;
+  from: number;
+  to: number;
   title: string;
 };
 
@@ -41,11 +43,11 @@ export class CatalogRangeFilterComponent extends Component<State> {
 
     this.$from!.min = String(this.state.min);
     this.$from!.max = String(this.state.max);
-    this.$from!.value = String(this.state.min);
+    this.$from!.value = String(this.state.from);
 
     this.$to!.min = String(this.state.min);
     this.$to!.max = String(this.state.max);
-    this.$to!.value = String(this.state.max);
+    this.$to!.value = String(this.state.to);
 
     this.updateFromToLabels();
   }

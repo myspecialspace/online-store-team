@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Component } from "../helpers/component";
 import { router } from "../helpers/router";
+import { Route } from "../helpers/router/types";
 import "./index.scss";
 import template from "./template.html";
 // import gitHubIcon from "../assets/github.svg";
@@ -16,7 +16,7 @@ export class RootComponent extends Component {
     super({ template });
   }
 
-  updateComponent(page: any) {
+  updateComponent(page: Route) {
     const prevComponent = this.component;
 
     this.component = new page.component();
@@ -27,14 +27,14 @@ export class RootComponent extends Component {
   }
   //onMounted вызывается в хуке helpers/component/component.ts  _callHook
   onMounted() {
-    console.log("this", this);
+    //console.log("this", this);
     //созд.роутер => отрисовка в template.html по id
     //query достанет html элемент
     this.$router = this.query("#router");
 
-    this.updateComponent(router.getCurrentRoute());
+    this.updateComponent(router.getCurrentRoute()!);
 
-    router.onChange((page: any) => {
+    router.onChange((page) => {
       this.updateComponent(page);
     });
 
