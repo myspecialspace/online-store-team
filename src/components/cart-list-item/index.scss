@@ -1,0 +1,21 @@
+.cart-list-item {
+  display: flex;
+  gap: 20px;
+  padding: 4px 10px;
+
+  .image {
+    width: 150px;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+
+  .buttons {
+    display: flex;
+  }
+}
