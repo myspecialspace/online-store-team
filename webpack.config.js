@@ -23,7 +23,7 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
-      publicPath: "/",
+      publicPath: isProduction ? "" : "/",
     }),
 
     // Add your plugins here
