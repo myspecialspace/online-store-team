@@ -1,0 +1,27 @@
+.catalog-item {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  position: relative;
+
+  &:hover .additional {
+    visibility: visible;
+  }
+
+  .pic {
+    width: 90%;
+    height: 170px;
+    object-fit: contain;
+  }
+
+  .additional {
+    visibility: hidden;
+  }
+
+  .name {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

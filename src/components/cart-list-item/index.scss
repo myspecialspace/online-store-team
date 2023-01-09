@@ -1,0 +1,33 @@
+.cart-list-item {
+  display: flex;
+  gap: 20px;
+  padding: 4px 10px;
+
+  .image {
+    width: 150px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .stock {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .quantity {
+    margin: 0 4px;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .buttons {
+    display: flex;
+  }
+}

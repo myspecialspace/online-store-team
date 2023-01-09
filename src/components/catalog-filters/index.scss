@@ -1,0 +1,9 @@
+.catalog-filters {
+  display: flex;
+  flex-flow: column;
+
+  .actions {
+    display: flex;
+    justify-content: space-around;
+  }
+}

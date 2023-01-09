@@ -1,0 +1,28 @@
+.cart-page {
+  width: 100%;
+
+  .wrapper {
+    margin: 40px 60px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .cart-page-list {
+    width: calc(70% - 20px);
+  }
+
+  .cart-page-summary {
+    width: 30%;
+    margin-left: 20px;
+  }
+
+  .cart-empty {
+    visibility: hidden;
+    width: 100%;
+    text-align: center;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+}

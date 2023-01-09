@@ -1,0 +1,58 @@
+@import '../styles/vars.scss';
+
+.root-page {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+
+  header {
+    height: 80px;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-family: cursive;
+    text-decoration: none;
+    color: black;
+  }
+
+  .cart-total {
+    display: flex;
+  }
+
+  .cart {
+    font-size: 24px;
+    text-decoration: none;
+  }
+
+  #router {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  footer {
+    height: 100px;
+    background-color: aliceblue;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .footer-item+.footer-item {
+    margin-left: 6px;
+  }
+
+  .course-logo {
+    height: 64px;
+  }
+}

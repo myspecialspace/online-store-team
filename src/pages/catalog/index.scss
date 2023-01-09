@@ -1,0 +1,46 @@
+.catalog-page {
+  display: flex;
+  width: 100%;
+
+  .filters {
+    width: 400px;
+    background-color: #ddd;
+    flex-shrink: 0;
+  }
+
+  .content {
+    flex-grow: 1;
+  }
+
+  .catalog-items {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .catalog-item {
+    width: calc(100% / 4);
+    margin-bottom: 10px;
+  }
+
+  .panel {
+    height: 50px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  &.view_small {
+    .catalog-item {
+      width: calc(100% / 6);
+      margin-bottom: 6px;
+    }
+  }
+
+  .no-results {
+    visibility: hidden;
+    text-align: center;
+    margin-top: 20px;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+}

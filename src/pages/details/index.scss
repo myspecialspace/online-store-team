@@ -1,0 +1,74 @@
+.details-page {
+  width: 100%;
+
+  .breadcrumbs {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+  }
+
+  .card {
+    margin: 40px 100px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+
+  .header {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .content {
+    display: flex;
+    padding: 8px;
+  }
+
+  .gallery-wrap {
+    width: 50%;
+  }
+
+  .info {
+    width: 30%;
+  }
+
+  .info,
+  .actions {
+    margin-left: 10px;
+  }
+
+  .info-row+.info-row {
+    margin-top: 10px;
+  }
+
+  .actions {
+    display: flex;
+    flex-flow: column;
+    width: 20%;
+  }
+
+  .price {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .to-cart,
+  .buy {
+    width: 100%;
+    display: block;
+    font-size: 20px;
+    background-color: white;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 3px solid rgb(153, 153, 153);
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+}
