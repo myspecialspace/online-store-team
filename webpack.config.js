@@ -18,19 +18,18 @@ const config = {
   devServer: {
     open: true,
     host: "localhost",
-    historyApiFallback: true,
+    historyApiFallback: true
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
-      publicPath: "/",
     }),
 
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js'],
   },
   module: {
     rules: [
@@ -48,15 +47,15 @@ const config = {
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2|png|jpe?g|gif|mp3|webp)$/i,
-        type: "asset/resource",
+        type: "asset",
       },
       {
         test: /\.html$/,
-        use: ["html-loader"],
+        use: ['html-loader'],
       },
       {
         test: /\.ts$/,
-        use: "ts-loader",
+        use: 'ts-loader',
         exclude: /node_modules/,
       },
 

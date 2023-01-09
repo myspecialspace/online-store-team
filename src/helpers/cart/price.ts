@@ -1,3 +1,4 @@
+import { PromoCode, promoCodeInfo } from "../../pages/cart/constants";
 import { Product } from "../api/types";
 import { CartState } from "./types";
 
@@ -16,5 +17,20 @@ export const getTotalPrice = (
 };
 
 export const formatPrice = (value: number): string => {
-  return value + "$";
+  return value.toFixed(2) + "$";
+};
+
+export const getDiscountTotal = (
+  totalPrice: number,
+  appliedCodes: PromoCode[]
+): number => {
+  const discountPercent = appliedCodes.reduce((acc, code) => {
+    const codeDiscount = promoCodeInfo[code].discount;
+    acc += codeDiscount;
+    return acc;
+  }, 0);
+
+  const discountValue = totalPrice * discountPercent;
+  const result = totalPrice - discountValue;
+  return result;
 };
