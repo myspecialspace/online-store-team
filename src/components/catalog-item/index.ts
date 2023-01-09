@@ -6,15 +6,15 @@ import { CatalogItemAdditionalComponent } from "../catalog-item-additional";
 import { ViewType } from "../catalog-panel/types";
 import "./index.scss";
 import template from "./template.html";
-import { CatalogItemEvents } from "./types";
+import { CatalogItemEventName, CatalogItemEvents } from "./types";
 
-type State = {
+export type State = {
   product: Product;
   inCart: boolean;
   viewType: ViewType;
 };
 
-export class CatalogItemComponent extends Component<State> {
+export class CatalogItemComponent extends Component<State, CatalogItemEvents> {
   $pic: HTMLImageElement | null = null;
   $price: HTMLDivElement | null = null;
   $name: HTMLDivElement | null = null;
@@ -78,7 +78,7 @@ export class CatalogItemComponent extends Component<State> {
 
   addEvents() {
     this.$addToCartButton?.addEventListener("click", () => {
-      this.emit(CatalogItemEvents.ADD, this.state);
+      this.emit(CatalogItemEventName.ADD, this.state);
     });
 
     this.$detailsButton?.addEventListener("click", () => {

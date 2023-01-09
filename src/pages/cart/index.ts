@@ -1,5 +1,5 @@
 import { CartListComponent } from "../../components/cart-list";
-import { CartListEvents } from "../../components/cart-list/types";
+import { CartListEventName } from "../../components/cart-list/types";
 import { CartSummaryComponent } from "../../components/cart-summary";
 import { api } from "../../helpers/api";
 import {
@@ -20,8 +20,8 @@ import { CartProduct, QueryName, QueryValues } from "./types";
 import { State as CartListState } from "../../components/cart-list";
 import { getDiscountTotal, getTotalPrice } from "../../helpers/cart/price";
 import { getTotalQuantity } from "../../helpers/cart/count";
-import { CartSummaryEvents } from "../../components/cart-summary/types";
 import { BuyModalComponent } from "../../components/buy-modal";
+import { CartSummaryEventName } from "../../components/cart-summary/types";
 
 export class CartPage extends Component {
   cartState: CartState = cart.getCart();
@@ -114,12 +114,12 @@ export class CartPage extends Component {
       });
 
       this.listComponent
-        .on(CartListEvents.LIMIT, ({ limit }) => {
+        .on(CartListEventName.LIMIT, ({ limit }) => {
           this.pagination.limit = limit;
           this.updatePaginationList();
           this.setPaginationInUrl();
         })
-        .on(CartListEvents.PAGE, ({ page }) => {
+        .on(CartListEventName.PAGE, ({ page }) => {
           this.pagination.page = page;
           this.updatePaginationList();
           this.setPaginationInUrl();
@@ -144,7 +144,7 @@ export class CartPage extends Component {
       });
       this.summaryComponent.render(this.$summary!);
       this.summaryComponent
-        .on(CartSummaryEvents.CHANGE_PROMO_CODE, (data) => {
+        .on(CartSummaryEventName.CHANGE_PROMO_CODE, (data) => {
           this.appliedCodes = data.isApplied
             ? this.appliedCodes.filter((code) => code !== data.code)
             : this.appliedCodes.concat(data.code);
@@ -154,7 +154,7 @@ export class CartPage extends Component {
             discountTotal: getDiscountTotal(this.totalPrice, this.appliedCodes),
           };
         })
-        .on(CartSummaryEvents.BUY, () => {
+        .on(CartSummaryEventName.BUY, () => {
           this.openBuyModal();
         });
     }
@@ -229,7 +229,7 @@ export class CartPage extends Component {
   }
 
   openBuyModal(): void {
-    this.buyComponent = new BuyModalComponent(null);
+    this.buyComponent = new BuyModalComponent();
     this.buyComponent.render(document.body);
     // this.buyComponent.on(...)
     // handle close modal and destroy

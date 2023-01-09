@@ -11,17 +11,17 @@ import "./index.scss";
 import template from "./template.html";
 import { FilterField, parseOptions } from "./constants";
 import {
-  CatalogPanelEvents,
+  CatalogPanelEventName,
   ViewType,
 } from "../../components/catalog-panel/types";
-import { CatalogFiltersEvent } from "../../components/catalog-filters/types";
+import { CatalogFiltersEventName } from "../../components/catalog-filters/types";
 import { RangeValue } from "../../components/catalog-range-filter/types";
 import { RouterPaths } from "../../helpers/router/constants";
 import { parseQuery, queryStringify } from "../../helpers/api/router";
 import { QueryName, QueryValues, SortField, SortType } from "./types";
 import { getProductInCart } from "../../helpers/cart/product";
 import { cart } from "../../helpers/cart";
-import { CatalogItemEvents } from "../../components/catalog-item/types";
+import { CatalogItemEventName } from "../../components/catalog-item/types";
 
 export class CatalogPage extends Component {
   itemComponents: CatalogItemComponent[] = [];
@@ -90,21 +90,21 @@ export class CatalogPage extends Component {
     });
 
     this.panelComponent
-      .on(CatalogPanelEvents.SORT, (value) => {
+      .on(CatalogPanelEventName.SORT, (value) => {
         const values = value.split("-");
         this.sortField = values[0] as typeof this.sortField;
         this.sortType = values[1] as typeof this.sortType;
         this.makeSort();
         this.setFilterToUrl();
       })
-      .on(CatalogPanelEvents.SEARCH, (value) => {
+      .on(CatalogPanelEventName.SEARCH, (value) => {
         this.searchValue = value;
         this.filterAndSearchProducts();
         this.makeSort();
         this.updateFilters();
         this.setFilterToUrl();
       })
-      .on(CatalogPanelEvents.VIEW, (type) => {
+      .on(CatalogPanelEventName.VIEW, (type) => {
         this.updateViewType(type);
         this.setFilterToUrl();
       });
@@ -123,7 +123,7 @@ export class CatalogPage extends Component {
         viewType: this.viewType,
       });
 
-      itemComponent.on(CatalogItemEvents.ADD, (state) => {
+      itemComponent.on(CatalogItemEventName.ADD, (state) => {
         if (state.inCart) {
           cart.decrementItem(state.product.id);
         } else {
@@ -161,16 +161,16 @@ export class CatalogPage extends Component {
     this.filtersComponent.render(this.$filters!);
 
     this.filtersComponent
-      .on(CatalogFiltersEvent.CHANGE, (filter) => {
+      .on(CatalogFiltersEventName.CHANGE, (filter) => {
         this.currentFilter = filter;
         this.filterAndSearchProducts();
         this.makeSort();
         this.setFilterToUrl();
       })
-      .on(CatalogFiltersEvent.RESET, () => {
+      .on(CatalogFiltersEventName.RESET, () => {
         this.resetFilter();
       })
-      .on(CatalogFiltersEvent.COPY, () => {
+      .on(CatalogFiltersEventName.COPY, () => {
         this.copyFilter();
       });
   }

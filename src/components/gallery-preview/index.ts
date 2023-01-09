@@ -1,11 +1,14 @@
 import { Component } from "../../helpers/component";
 import "./index.scss";
 import template from "./template.html";
-import { GalleryPreviewEvents } from "./types";
+import { GalleryPreviewEventName, GalleryPreviewEvents } from "./types";
 
-type State = string;
+export type State = string;
 
-export class GalleryPreviewComponent extends Component<State> {
+export class GalleryPreviewComponent extends Component<
+  State,
+  GalleryPreviewEvents
+> {
   $image: HTMLImageElement | null = null;
 
   constructor(state: State) {
@@ -25,7 +28,7 @@ export class GalleryPreviewComponent extends Component<State> {
 
   addEvents() {
     this.$root!.addEventListener("click", () => {
-      this.emit(GalleryPreviewEvents.SELECT, this.state);
+      this.emit(GalleryPreviewEventName.SELECT, this.state);
     });
   }
 }

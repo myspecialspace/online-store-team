@@ -3,7 +3,7 @@ import { CartProduct } from "../../pages/cart/types";
 import { CartListItemComponent } from "../cart-list-item";
 import "./index.scss";
 import template from "./template.html";
-import { CartListEvents } from "./types";
+import { CartListEventName, CartListEvents } from "./types";
 
 export interface State {
   cartProducts: CartProduct[];
@@ -15,7 +15,7 @@ export interface State {
   };
 }
 
-export class CartListComponent extends Component<State> {
+export class CartListComponent extends Component<State, CartListEvents> {
   $list: HTMLDivElement | null = null;
   $limit: HTMLInputElement | null = null;
   $page: HTMLDivElement | null = null;
@@ -79,17 +79,17 @@ export class CartListComponent extends Component<State> {
   addEvents(): void {
     this.$limit!.addEventListener("change", () => {
       const limit = parseInt(this.$limit!.value);
-      this.emit(CartListEvents.LIMIT, { limit });
+      this.emit(CartListEventName.LIMIT, { limit });
     });
 
     this.$prev!.addEventListener("click", () => {
       const page = this.state.pagination.page - 1;
-      this.emit(CartListEvents.PAGE, { page });
+      this.emit(CartListEventName.PAGE, { page });
     });
 
     this.$next!.addEventListener("click", () => {
       const page = this.state.pagination.page + 1;
-      this.emit(CartListEvents.PAGE, { page });
+      this.emit(CartListEventName.PAGE, { page });
     });
   }
 }

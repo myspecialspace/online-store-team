@@ -1,12 +1,15 @@
 import { Component } from "../../helpers/component";
 import { GalleryPreviewComponent } from "../gallery-preview";
-import { GalleryPreviewEvents } from "../gallery-preview/types";
+import {
+  GalleryPreviewEventName,
+  GalleryPreviewEvents,
+} from "../gallery-preview/types";
 import "./index.scss";
 import template from "./template.html";
 
 type State = string[];
 
-export class GalleryComponent extends Component<State> {
+export class GalleryComponent extends Component<State, GalleryPreviewEvents> {
   $previews: HTMLDivElement | null = null;
   $image: HTMLImageElement | null = null;
   $zoom: HTMLImageElement | null = null;
@@ -52,7 +55,7 @@ export class GalleryComponent extends Component<State> {
     this.state.forEach((src) => {
       const component = new GalleryPreviewComponent(src);
       component.render(this.$previews!);
-      component.on(GalleryPreviewEvents.SELECT, (src) => {
+      component.on(GalleryPreviewEventName.SELECT, (src) => {
         this.updateImage(src);
       });
       this.previewComponents.push(component);

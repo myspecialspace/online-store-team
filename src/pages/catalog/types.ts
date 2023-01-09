@@ -3,7 +3,7 @@ import { ViewType } from "../../components/catalog-panel/types";
 export enum QueryName {
   CATEGORIES = "categories",
   BRANDS = "brands",
-  PRICE_FROM = "price_form",
+  PRICE_FROM = "price_from",
   PRICE_TO = "price_to",
   STOCK_FROM = "stock_from",
   STOCK_TO = "stock_to",

@@ -3,14 +3,26 @@ export interface Options<TState> {
   template: string;
 }
 
-export interface Listener {
+export interface Listener<TEvents extends EventsUnion> {
   name: EventName;
-  fn: ListenerFn;
+  fn: ListenerFn<EventsData<TEvents, EventsName<TEvents>>>;
 }
 
+export type ListenerFn<TData> = (data: TData) => void;
+
+export type EventsName<TEvents extends EventsUnion> = TEvents["eventName"];
+
+export type EventsData<
+  TEvents extends EventsUnion,
+  TName extends EventsName<TEvents>
+> = Extract<TEvents, { eventName: TName }>["data"];
+
+export type EventsUnion = {
+  eventName: string;
+  data?: unknown;
+};
+
 export type EventName = string;
-export type ListenerFn = (data: ListenerFnData) => unknown;
-export type ListenerFnData = any; // TODO
 
 export enum Hooks {
   ON_MOUNTED = "onMounted",

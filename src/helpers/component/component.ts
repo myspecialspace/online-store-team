@@ -1,17 +1,21 @@
 import {
-  EventName,
+  EventsData,
+  EventsName,
+  EventsUnion,
   Hooks,
   Listener,
   ListenerFn,
-  ListenerFnData,
   Options,
 } from "./types";
 
-export class Component<TState = null> {
+export class Component<
+  TState = Record<string, never>,
+  TEvents extends EventsUnion = EventsUnion
+> {
   private _state: TState;
   private _template: string;
   private _$parent: HTMLElement | null = null;
-  private _listeners: Listener[] = [];
+  private _listeners: Listener<TEvents>[] = [];
   private isMounted = false;
   private _templateDom: HTMLDivElement;
   public $root: HTMLElement | null = null;
@@ -23,22 +27,22 @@ export class Component<TState = null> {
     this._templateDom.innerHTML = this._template;
   }
 
-  set state(patch: Partial<TState>) {
+  public set state(patch: Partial<TState>) {
     this._state = {
       ...this._state,
       ...patch,
     };
 
     if (this.isMounted) {
-      this._callHook(Hooks.ON_UPDATED);
+      this.callHook(Hooks.ON_UPDATED);
     }
   }
 
-  get state(): TState {
+  public get state(): TState {
     return this._state;
   }
 
-  render(appendTo: string | HTMLElement) {
+  public render(appendTo: string | HTMLElement) {
     this._$parent =
       typeof appendTo === "string"
         ? document.querySelector(appendTo)
@@ -58,29 +62,35 @@ export class Component<TState = null> {
 
     this.isMounted = true;
 
-    this._callHook(Hooks.ON_MOUNTED);
+    this.callHook(Hooks.ON_MOUNTED);
   }
 
-  destroy() {
+  public destroy() {
     this.$root!.remove();
     this._listeners = [];
-    this._callHook(Hooks.ON_DESTROYED);
+    this.callHook(Hooks.ON_DESTROYED);
   }
 
-  query<TElement extends Element>(selector: string) {
+  public query<TElement extends Element>(selector: string) {
     return this.$root!.querySelector<TElement>(selector);
   }
 
-  queryAll<TElement extends Element>(selector: string) {
+  public queryAll<TElement extends Element>(selector: string) {
     return this.$root!.querySelectorAll<TElement>(selector);
   }
 
-  on(name: EventName, fn: ListenerFn) {
-    this._listeners.push({ name, fn });
+  public on<
+    TName extends EventsName<TEvents>,
+    TData extends EventsData<TEvents, TName>
+  >(name: TName, fn: ListenerFn<TData>) {
+    this._listeners.push({ name, fn } as Listener<TEvents>);
     return this;
   }
 
-  emit(name: EventName, data?: ListenerFnData) {
+  public emit<
+    TName extends EventsName<TEvents>,
+    TData extends EventsData<TEvents, TName>
+  >(name: TName, data?: TData) {
     this._listeners.forEach((listener) => {
       if (listener.name === name) {
         listener.fn(data);
@@ -88,7 +98,7 @@ export class Component<TState = null> {
     });
   }
 
-  _callHook(hookName: Hooks) {
+  private callHook(hookName: Hooks) {
     const hook = this[hookName as keyof this];
 
     if (typeof hook === "function") {
