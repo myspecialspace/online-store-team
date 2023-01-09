@@ -2,9 +2,7 @@ import { Component } from "../../helpers/component";
 import "./index.scss";
 import template from "./template.html";
 
-type State = {
-
-};
+type State = {};
 
 export class BuyModalComponent extends Component<State> {
   $desc: HTMLDivElement | null = null;
@@ -13,15 +11,9 @@ export class BuyModalComponent extends Component<State> {
     super({ template, state });
   }
 
-  onMounted() {
+  onMounted() {}
 
-  }
+  onUpdated() {}
 
-  onUpdated() {
-
-  }
-
-  addEvents() {
-
-  }
+  addEvents() {}
 }

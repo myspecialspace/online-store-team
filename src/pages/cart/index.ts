@@ -40,9 +40,9 @@ export class CartPage extends Component {
 
   appliedCodes: PromoCode[] = [];
 
-  totalQuantity: number = 0;
-  totalPrice: number = 0;
-  discountTotal: number = 0;
+  totalQuantity = 0;
+  totalPrice = 0;
+  discountTotal = 0;
 
   constructor() {
     super({ template });
