@@ -63,12 +63,12 @@ export class RootComponent extends Component {
   }
 
   addEvents() {
-    this.$logo!.addEventListener('click', (event) => {
+    this.$logo!.addEventListener("click", (event) => {
       event.preventDefault();
       router.setPage(RouterPaths.CATALOG);
     });
 
-    this.$cart!.addEventListener('click', (event) => {
+    this.$cart!.addEventListener("click", (event) => {
       event.preventDefault();
       router.setPage(RouterPaths.CART);
     });
@@ -77,10 +77,12 @@ export class RootComponent extends Component {
   updateCartLink(): void {
     const count = getTotalQuantity(this.cartState);
 
-    this.$cart!.textContent = count === 0 ? 'Cart': `Cart (${count})`;
+    this.$cart!.textContent = count === 0 ? "Cart" : `Cart (${count})`;
   }
 
   updateCartTotal(): void {
-    this.$cartTotalValue!.textContent = formatPrice(getTotalPrice(this.cartState!, this.products));
+    this.$cartTotalValue!.textContent = formatPrice(
+      getTotalPrice(this.cartState!, this.products)
+    );
   }
 }

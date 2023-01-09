@@ -16,10 +16,11 @@ class Router {
     this._callbacks = [];
     this._NotFoundPage = NotFoundPage;
 
-    this.setPage(window.location.pathname + window.location.search);
+    this.setInitialPage();
 
     window.addEventListener("popstate", () => {
-      this.setPage(window.location.pathname + window.location.search);
+      const url = window.location.pathname + window.location.search;
+      this.setPage(url, false);
     });
   }
 
@@ -27,14 +28,14 @@ class Router {
     this._callbacks.push(fn);
   }
 
-  setPage(url: string): void {
+  setPage(url: string, pushState = true): void {
     const prevRoute = this._currentRoute;
     this._currentRoute = this._findPage(url);
 
-    // TODO check if set same url
-
     if (this._currentRoute) {
-      this._changeUrl(url);
+      if (pushState) {
+        this._changeUrl(url);
+      }
     } else {
       this._currentRoute = {
         name: RouterPaths.NOT_FOUND,
@@ -64,8 +65,18 @@ class Router {
     return this._config.find((item) => item.name === name) || null;
   }
 
-  _changeUrl(name: string) {
-    window.history.pushState(null, "", name);
+  _changeUrl(url: string) {
+    if (url !== window.location.pathname + window.location.pathname) {
+      window.history.pushState(null, "", url);
+    }
+  }
+
+  setInitialPage() {
+    const { pathname, search } = window.location;
+    const url =
+      pathname === "/" ? this._config[0].name + search : pathname + search;
+
+    this.setPage(url);
   }
 }
 

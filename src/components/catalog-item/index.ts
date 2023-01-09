@@ -50,10 +50,10 @@ export class CatalogItemComponent extends Component<Product> {
     this.$addToCartButton?.addEventListener("click", () => {
       if (this.inCart) {
         cart.decrementItem(this.state.id);
-        this.$addToCartButton!.textContent = 'ADD TO CART';
+        this.$addToCartButton!.textContent = "ADD TO CART";
       } else {
         cart.incrementItem(this.state.id);
-        this.$addToCartButton!.textContent = 'DROP FROM CART';
+        this.$addToCartButton!.textContent = "DROP FROM CART";
       }
 
       this.inCart = !this.inCart;

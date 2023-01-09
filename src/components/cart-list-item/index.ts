@@ -47,17 +47,20 @@ export class CartListItemComponent extends Component<State> {
     this.$description!.textContent = this.state.product.description;
     this.$rating!.textContent = String(this.state.product.rating);
     this.$discount!.textContent = String(this.state.product.discountPercentage);
-    this.$stock!.textContent = String(this.state.product.stock);
+    this.$stock!.textContent = "Stock: " + this.state.product.stock;
     this.$quantity!.textContent = String(this.state.quantity);
-    this.$price!.textContent = this.state.product.price + '$';
+    this.$price!.textContent = this.state.product.price + "$";
+
+    this.$increment!.disabled =
+      this.state.quantity === this.state.product.stock;
   }
 
   addEvents() {
-    this.$increment!.addEventListener('click', () => {
+    this.$increment!.addEventListener("click", () => {
       cart.incrementItem(this.state.id);
     });
 
-    this.$decrement!.addEventListener('click', () => {
+    this.$decrement!.addEventListener("click", () => {
       cart.decrementItem(this.state.id);
     });
   }

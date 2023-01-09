@@ -3,13 +3,24 @@ import { CartProduct } from "../../pages/cart/types";
 import { CartListItemComponent } from "../cart-list-item";
 import "./index.scss";
 import template from "./template.html";
+import { CartListEvents } from "./types";
 
-interface State {
+export interface State {
   cartProducts: CartProduct[];
+  pagination: {
+    limit: number;
+    maxLimit: number;
+    page: number;
+    maxPage: number;
+  };
 }
 
 export class CartListComponent extends Component<State> {
   $list: HTMLDivElement | null = null;
+  $limit: HTMLInputElement | null = null;
+  $page: HTMLDivElement | null = null;
+  $prev: HTMLButtonElement | null = null;
+  $next: HTMLButtonElement | null = null;
 
   itemComponents: CartListItemComponent[] = [];
 
@@ -19,8 +30,13 @@ export class CartListComponent extends Component<State> {
 
   onMounted() {
     this.$list = this.query(".list");
+    this.$limit = this.query(".limit .value");
+    this.$page = this.query(".page .value");
+    this.$prev = this.query(".prev");
+    this.$next = this.query(".next");
 
     this.onUpdated();
+    this.addEvents();
   }
 
   onUpdated(): void {
@@ -32,6 +48,16 @@ export class CartListComponent extends Component<State> {
       this.destroyItems();
       this.createItems();
     }
+
+    this.$limit!.value = String(this.state.pagination.limit);
+    this.$limit!.min = String(1);
+    this.$limit!.max = String(this.state.pagination.maxLimit);
+
+    this.$page!.textContent = String(this.state.pagination.page);
+
+    this.$prev!.disabled = this.state.pagination.page === 1;
+    this.$next!.disabled =
+      this.state.pagination.page === this.state.pagination.maxPage;
   }
 
   createItems(): void {
@@ -48,5 +74,22 @@ export class CartListComponent extends Component<State> {
     while ((component = this.itemComponents.pop())) {
       component.destroy();
     }
+  }
+
+  addEvents(): void {
+    this.$limit!.addEventListener("change", () => {
+      const limit = parseInt(this.$limit!.value);
+      this.emit(CartListEvents.LIMIT, { limit });
+    });
+
+    this.$prev!.addEventListener("click", () => {
+      const page = this.state.pagination.page - 1;
+      this.emit(CartListEvents.PAGE, { page });
+    });
+
+    this.$next!.addEventListener("click", () => {
+      const page = this.state.pagination.page + 1;
+      this.emit(CartListEvents.PAGE, { page });
+    });
   }
 }
