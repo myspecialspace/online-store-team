@@ -2,7 +2,7 @@ import { Component } from "../../helpers/component";
 import "./index.scss";
 import template from "./template.html";
 
-interface State { }
+interface State {}
 
 export class CartSummaryComponent extends Component<State> {
   $pic: HTMLImageElement | null = null;
@@ -18,14 +18,9 @@ export class CartSummaryComponent extends Component<State> {
     this.onUpdated();
   }
 
-  onUpdated() {
+  onUpdated() {}
 
-  }
+  createAdditional() {}
 
-  createAdditional() {
-  }
-
-  addEvents() {
-
-  }
+  addEvents() {}
 }

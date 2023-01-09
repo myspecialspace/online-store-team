@@ -1,6 +1,6 @@
 import { CartState, ChangeFn } from "./types";
 
-const CART_KEY = 'STORE_CART';
+const CART_KEY = "STORE_CART";
 
 class Cart {
   private changeFns: ChangeFn[] = [];
@@ -38,7 +38,7 @@ class Cart {
   }
 
   public getCart(): CartState {
-    return JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
   }
 
   private setCart(data: CartState): void {
