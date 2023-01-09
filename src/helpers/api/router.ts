@@ -32,17 +32,18 @@ export enum ParseType {
   ARRAY = "array",
 }
 
-// TODO types
-export const parseQuery = (options: ParseOptions): any => {
+export const parseQuery = <T extends object>(options: ParseOptions): T => {
   const search = window.location.search.slice(1);
 
   const pairs = search.split("&");
 
-  const result: any = {};
+  const result: Record<string, QueryValue> = {};
 
   pairs.forEach((pair) => {
-    const [key, rawValue] = pair.split("=");
-    let value: QueryValue = rawValue;
+    const [key, val] = pair.split("=");
+    const rawValue = decodeURI(val);
+
+    let value: QueryValue = decodeURIComponent(rawValue);
 
     switch (options.fields[key]) {
       case ParseType.ARRAY:
@@ -65,5 +66,5 @@ export const parseQuery = (options: ParseOptions): any => {
     result[key] = value;
   });
 
-  return result;
+  return result as T;
 };

@@ -5,10 +5,10 @@ import {
   State as CheckboxFilterState,
   CatalogCheckboxFilterComponent,
 } from "../catalog-checkbox-filter";
-import { CatalogCheckboxFilterEvent } from "../catalog-checkbox-filter/types";
-import { CatalogFiltersEvent } from "./types";
+import { CatalogCheckboxFilterEventName } from "../catalog-checkbox-filter/types";
+import { CatalogFiltersEventName, CatalogFiltersEvents } from "./types";
 import { CatalogRangeFilterComponent } from "../catalog-range-filter";
-import { CatalogRangeFilterEvent } from "../catalog-range-filter/types";
+import { CatalogRangeFilterEventName } from "../catalog-range-filter/types";
 import { State as CatalogRangeFilterState } from "../catalog-range-filter";
 
 type State = {
@@ -18,7 +18,10 @@ type State = {
   stock: CatalogRangeFilterState;
 };
 
-export class CatalogFiltersComponent extends Component<State> {
+export class CatalogFiltersComponent extends Component<
+  State,
+  CatalogFiltersEvents
+> {
   $category: HTMLSelectElement | null = null;
   $brand: HTMLDivElement | null = null;
   $price: HTMLDivElement | null = null;
@@ -35,6 +38,8 @@ export class CatalogFiltersComponent extends Component<State> {
   selectedCategories: string[] = [];
   price: CatalogRangeFilterState | null = null;
   stock: CatalogRangeFilterState | null = null;
+
+  timeoutId = 0;
 
   constructor(state: State) {
     super({ template, state });
@@ -71,25 +76,31 @@ export class CatalogFiltersComponent extends Component<State> {
       this.state.category
     );
     this.categoryComponent.render(this.$category!);
-    this.categoryComponent.on(CatalogCheckboxFilterEvent.CHANGE, (selected) => {
-      this.selectedCategories = selected;
-      this.emitChange();
-    });
+    this.categoryComponent.on(
+      CatalogCheckboxFilterEventName.CHANGE,
+      (selected) => {
+        this.selectedCategories = selected;
+        this.emitChange();
+      }
+    );
   }
 
   createBrandFilter() {
     this.brandComponent = new CatalogCheckboxFilterComponent(this.state.brand);
     this.brandComponent.render(this.$brand!);
-    this.brandComponent.on(CatalogCheckboxFilterEvent.CHANGE, (selected) => {
-      this.selectedBrands = selected;
-      this.emitChange();
-    });
+    this.brandComponent.on(
+      CatalogCheckboxFilterEventName.CHANGE,
+      (selected) => {
+        this.selectedBrands = selected;
+        this.emitChange();
+      }
+    );
   }
 
   createPriceFilter() {
     this.priceComponent = new CatalogRangeFilterComponent(this.state.price);
     this.priceComponent.render(this.$price!);
-    this.priceComponent.on(CatalogRangeFilterEvent.CHANGE, (data) => {
+    this.priceComponent.on(CatalogRangeFilterEventName.CHANGE, (data) => {
       this.price = data;
       this.emitChange();
     });
@@ -98,18 +109,18 @@ export class CatalogFiltersComponent extends Component<State> {
   createStockFilter() {
     this.stockComponent = new CatalogRangeFilterComponent(this.state.stock);
     this.stockComponent.render(this.$stock!);
-    this.stockComponent.on(CatalogRangeFilterEvent.CHANGE, (data) => {
+    this.stockComponent.on(CatalogRangeFilterEventName.CHANGE, (data) => {
       this.stock = data;
       this.emitChange();
     });
   }
 
   emitChange() {
-    this.emit(CatalogFiltersEvent.CHANGE, {
+    this.emit(CatalogFiltersEventName.CHANGE, {
       brands: this.selectedBrands,
       categories: this.selectedCategories,
-      price: this.price,
-      stock: this.stock,
+      price: this.price!,
+      stock: this.stock!,
     });
   }
 
@@ -120,11 +131,19 @@ export class CatalogFiltersComponent extends Component<State> {
       this.price = null;
       this.stock = null;
 
-      this.emit(CatalogFiltersEvent.RESET);
+      this.emit(CatalogFiltersEventName.RESET);
     });
 
     this.$copy!.addEventListener("click", () => {
-      this.emit(CatalogFiltersEvent.COPY);
+      this.emit(CatalogFiltersEventName.COPY);
+
+      this.$copy!.textContent = "COPIED!";
+
+      clearTimeout(this.timeoutId);
+
+      this.timeoutId = setTimeout(() => {
+        this.$copy!.textContent = "COPY";
+      }, 2000);
     });
   }
 }

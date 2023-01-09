@@ -11,18 +11,20 @@ import "./index.scss";
 import template from "./template.html";
 import { FilterField, parseOptions } from "./constants";
 import {
-  CatalogPanelEvents,
+  CatalogPanelEventName,
   ViewType,
 } from "../../components/catalog-panel/types";
-import { CatalogItemSmallComponent } from "../../components/catalog-item-small";
-import { CatalogFiltersEvent } from "../../components/catalog-filters/types";
+import { CatalogFiltersEventName } from "../../components/catalog-filters/types";
 import { RangeValue } from "../../components/catalog-range-filter/types";
 import { RouterPaths } from "../../helpers/router/constants";
 import { parseQuery, queryStringify } from "../../helpers/api/router";
 import { QueryName, QueryValues, SortField, SortType } from "./types";
+import { getProductInCart } from "../../helpers/cart/product";
+import { cart } from "../../helpers/cart";
+import { CatalogItemEventName } from "../../components/catalog-item/types";
 
 export class CatalogPage extends Component {
-  itemComponents: Array<CatalogItemComponent | CatalogItemSmallComponent> = [];
+  itemComponents: CatalogItemComponent[] = [];
   panelComponent: CatalogPanelComponent | null = null;
   filtersComponent: CatalogFiltersComponent | null = null;
 
@@ -37,6 +39,7 @@ export class CatalogPage extends Component {
   sortType: SortType = SortType.ASC;
   sortField: SortField = SortField.PRICE;
   viewType: ViewType = ViewType.BIG;
+
   readonly FILTER_INITIAL = {
     brands: [],
     categories: [],
@@ -67,15 +70,18 @@ export class CatalogPage extends Component {
     this.createPanel();
     this.createProducts();
     this.createFilters();
-    this.updateViewType(this.viewType);
 
     this.updateFilterFromUrl();
     this.filterAndSearchProducts();
     this.updateFilters();
+
+    this.updateViewType(this.viewType);
+    this.makeSort();
   }
 
   createPanel() {
     this.panelComponent = new CatalogPanelComponent({
+      total: this.data!.total,
       limit: this.visibleProducts.length,
       view: this.viewType,
       search: this.searchValue,
@@ -84,20 +90,21 @@ export class CatalogPage extends Component {
     });
 
     this.panelComponent
-      .on(CatalogPanelEvents.SORT, (value) => {
+      .on(CatalogPanelEventName.SORT, (value) => {
         const values = value.split("-");
         this.sortField = values[0] as typeof this.sortField;
         this.sortType = values[1] as typeof this.sortType;
         this.makeSort();
         this.setFilterToUrl();
       })
-      .on(CatalogPanelEvents.SEARCH, (value) => {
+      .on(CatalogPanelEventName.SEARCH, (value) => {
         this.searchValue = value;
         this.filterAndSearchProducts();
+        this.makeSort();
         this.updateFilters();
         this.setFilterToUrl();
       })
-      .on(CatalogPanelEvents.VIEW, (type) => {
+      .on(CatalogPanelEventName.VIEW, (type) => {
         this.updateViewType(type);
         this.setFilterToUrl();
       });
@@ -106,12 +113,27 @@ export class CatalogPage extends Component {
   }
 
   createProducts() {
-    this.visibleProducts.forEach((product) => {
-      const itemComponent =
-        this.viewType === ViewType.BIG
-          ? new CatalogItemComponent(product)
-          : new CatalogItemSmallComponent(product);
+    const cartState = cart.getCart();
 
+    this.visibleProducts.forEach((product) => {
+      const inCart = getProductInCart(cartState, product.id);
+      const itemComponent = new CatalogItemComponent({
+        product,
+        inCart,
+        viewType: this.viewType,
+      });
+
+      itemComponent.on(CatalogItemEventName.ADD, (state) => {
+        if (state.inCart) {
+          cart.decrementItem(state.product.id);
+        } else {
+          cart.incrementItem(state.product.id);
+        }
+
+        itemComponent!.state = {
+          inCart: !state.inCart,
+        };
+      });
       itemComponent.render(this.$items!);
       this.itemComponents.push(itemComponent);
     });
@@ -139,15 +161,16 @@ export class CatalogPage extends Component {
     this.filtersComponent.render(this.$filters!);
 
     this.filtersComponent
-      .on(CatalogFiltersEvent.CHANGE, (filter) => {
+      .on(CatalogFiltersEventName.CHANGE, (filter) => {
         this.currentFilter = filter;
         this.filterAndSearchProducts();
+        this.makeSort();
         this.setFilterToUrl();
       })
-      .on(CatalogFiltersEvent.RESET, () => {
+      .on(CatalogFiltersEventName.RESET, () => {
         this.resetFilter();
       })
-      .on(CatalogFiltersEvent.COPY, () => {
+      .on(CatalogFiltersEventName.COPY, () => {
         this.copyFilter();
       });
   }
@@ -241,7 +264,7 @@ export class CatalogPage extends Component {
 
   sortVisibleProducts() {
     this.visibleProducts.sort((a, b) => {
-      if (this.sortType === SortType.DESC) {
+      if (this.sortType === SortType.ASC) {
         return a[this.sortField] - b[this.sortField];
       } else {
         return b[this.sortField] - a[this.sortField];
@@ -260,8 +283,11 @@ export class CatalogPage extends Component {
     this.$root!.classList.add(`view_${view}`);
 
     if (isChanged) {
-      this.destroyProducts();
-      this.createProducts();
+      this.itemComponents.forEach((component) => {
+        component.state = {
+          viewType: this.viewType,
+        };
+      });
     }
 
     this.panelComponent!.state = {
@@ -348,7 +374,7 @@ export class CatalogPage extends Component {
   }
 
   updateFilterFromUrl(): void {
-    const queryData = parseQuery(parseOptions) as QueryValues;
+    const queryData = parseQuery<QueryValues>(parseOptions);
 
     this.currentFilter = {
       brands: queryData[QueryName.BRANDS] || this.FILTER_INITIAL.brands,
@@ -374,6 +400,7 @@ export class CatalogPage extends Component {
     router.setPage(RouterPaths.CATALOG);
     this.updateFilterFromUrl();
     this.filterAndSearchProducts();
+    this.makeSort();
     this.updateFilters();
   }
 

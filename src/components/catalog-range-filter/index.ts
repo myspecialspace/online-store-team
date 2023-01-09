@@ -1,7 +1,7 @@
 import { Component } from "../../helpers/component";
 import "./index.scss";
 import template from "./template.html";
-import { CatalogRangeFilterEvent } from "./types";
+import { CatalogRangeFilterEventName, CatalogRangeFilterEvents } from "./types";
 
 export type State = {
   min: number;
@@ -11,7 +11,10 @@ export type State = {
   title: string;
 };
 
-export class CatalogRangeFilterComponent extends Component<State> {
+export class CatalogRangeFilterComponent extends Component<
+  State,
+  CatalogRangeFilterEvents
+> {
   $from: HTMLInputElement | null = null;
   $to: HTMLInputElement | null = null;
   $title: HTMLDivElement | null = null;
@@ -95,6 +98,11 @@ export class CatalogRangeFilterComponent extends Component<State> {
     const from = parseInt(this.$from!.value);
     const to = parseInt(this.$to!.value);
 
-    this.emit(CatalogRangeFilterEvent.CHANGE, { from, to });
+    // this.emit(CatalogRangeFilterEventName.CHANGE, { from, to });
+    this.emit(CatalogRangeFilterEventName.CHANGE, {
+      ...this.state,
+      from,
+      to,
+    });
   }
 }

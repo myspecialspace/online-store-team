@@ -1,13 +1,20 @@
 import { Product } from "../../helpers/api/types";
-import { cart } from "../../helpers/cart";
 import { Component } from "../../helpers/component";
 import { router } from "../../helpers/router";
-import { RouterPaths } from "../../helpers/router/constants";
+import { detailsRoutePath } from "../../helpers/router/constants";
 import { CatalogItemAdditionalComponent } from "../catalog-item-additional";
+import { ViewType } from "../catalog-panel/types";
 import "./index.scss";
 import template from "./template.html";
+import { CatalogItemEventName, CatalogItemEvents } from "./types";
 
-export class CatalogItemComponent extends Component<Product> {
+export type State = {
+  product: Product;
+  inCart: boolean;
+  viewType: ViewType;
+};
+
+export class CatalogItemComponent extends Component<State, CatalogItemEvents> {
   $pic: HTMLImageElement | null = null;
   $price: HTMLDivElement | null = null;
   $name: HTMLDivElement | null = null;
@@ -15,9 +22,8 @@ export class CatalogItemComponent extends Component<Product> {
   $addToCartButton: HTMLButtonElement | null = null;
   $detailsButton: HTMLButtonElement | null = null;
   additionalComponent: CatalogItemAdditionalComponent | null = null;
-  inCart = false;
 
-  constructor(state: Product) {
+  constructor(state: State) {
     super({ template, state });
   }
 
@@ -34,33 +40,49 @@ export class CatalogItemComponent extends Component<Product> {
   }
 
   onUpdated() {
-    this.$pic!.src = this.state.images[0];
-    this.$price!.textContent = this.state.price + "$";
-    this.$name!.textContent = this.state.title;
+    this.$pic!.src = this.state.product.images[0];
+    this.$price!.textContent = this.state.product.price + "$";
+    this.$name!.textContent = this.state.product.title;
+    this.$name!.title = this.state.product.title;
 
-    this.createAdditional();
+    if (this.state.viewType === ViewType.BIG) {
+      this.$addToCartButton!.textContent = this.state.inCart
+        ? "DROP FROM CART"
+        : "ADD TO CART";
+      this.createAdditional();
+    } else {
+      this.$addToCartButton!.textContent = this.state.inCart
+        ? "DROP"
+        : "ADD TO";
+      this.destroyAdditional();
+    }
   }
 
   createAdditional() {
-    this.additionalComponent = new CatalogItemAdditionalComponent(this.state);
+    if (this.additionalComponent) {
+      return;
+    }
+
+    this.additionalComponent = new CatalogItemAdditionalComponent(
+      this.state.product
+    );
     this.additionalComponent.render(this.$additional!);
+  }
+
+  destroyAdditional() {
+    if (this.additionalComponent) {
+      this.additionalComponent.destroy();
+      this.additionalComponent = null;
+    }
   }
 
   addEvents() {
     this.$addToCartButton?.addEventListener("click", () => {
-      if (this.inCart) {
-        cart.decrementItem(this.state.id);
-        this.$addToCartButton!.textContent = "ADD TO CART";
-      } else {
-        cart.incrementItem(this.state.id);
-        this.$addToCartButton!.textContent = "DROP FROM CART";
-      }
-
-      this.inCart = !this.inCart;
+      this.emit(CatalogItemEventName.ADD, this.state);
     });
 
     this.$detailsButton?.addEventListener("click", () => {
-      router.setPage(RouterPaths.DETAILS);
+      router.setPage(detailsRoutePath(this.state.product.id));
     });
   }
 }

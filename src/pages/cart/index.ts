@@ -1,8 +1,12 @@
 import { CartListComponent } from "../../components/cart-list";
-import { CartListEvents } from "../../components/cart-list/types";
+import { CartListEventName } from "../../components/cart-list/types";
 import { CartSummaryComponent } from "../../components/cart-summary";
 import { api } from "../../helpers/api";
-import { parseQuery, queryStringify } from "../../helpers/api/router";
+import {
+  parseQuery,
+  ParseType,
+  queryStringify,
+} from "../../helpers/api/router";
 import { Product } from "../../helpers/api/types";
 import { cart } from "../../helpers/cart";
 import { CartState } from "../../helpers/cart/types";
@@ -16,8 +20,8 @@ import { CartProduct, QueryName, QueryValues } from "./types";
 import { State as CartListState } from "../../components/cart-list";
 import { getDiscountTotal, getTotalPrice } from "../../helpers/cart/price";
 import { getTotalQuantity } from "../../helpers/cart/count";
-import { CartSummaryEvents } from "../../components/cart-summary/types";
 import { BuyModalComponent } from "../../components/buy-modal";
+import { CartSummaryEventName } from "../../components/cart-summary/types";
 
 export class CartPage extends Component {
   cartState: CartState = cart.getCart();
@@ -40,9 +44,9 @@ export class CartPage extends Component {
 
   appliedCodes: PromoCode[] = [];
 
-  totalQuantity: number = 0;
-  totalPrice: number = 0;
-  discountTotal: number = 0;
+  totalQuantity = 0;
+  totalPrice = 0;
+  discountTotal = 0;
 
   constructor() {
     super({ template });
@@ -61,6 +65,7 @@ export class CartPage extends Component {
     this.updatePaginationFromUrl();
     this.listOrEmpty();
     this.updatePaginationList();
+    this.openModalViaBuyNow();
 
     cart.onChange((cartState) => {
       this.cartState = cartState;
@@ -109,12 +114,12 @@ export class CartPage extends Component {
       });
 
       this.listComponent
-        .on(CartListEvents.LIMIT, ({ limit }) => {
+        .on(CartListEventName.LIMIT, ({ limit }) => {
           this.pagination.limit = limit;
           this.updatePaginationList();
           this.setPaginationInUrl();
         })
-        .on(CartListEvents.PAGE, ({ page }) => {
+        .on(CartListEventName.PAGE, ({ page }) => {
           this.pagination.page = page;
           this.updatePaginationList();
           this.setPaginationInUrl();
@@ -139,7 +144,7 @@ export class CartPage extends Component {
       });
       this.summaryComponent.render(this.$summary!);
       this.summaryComponent
-        .on(CartSummaryEvents.CHANGE_PROMO_CODE, (data) => {
+        .on(CartSummaryEventName.CHANGE_PROMO_CODE, (data) => {
           this.appliedCodes = data.isApplied
             ? this.appliedCodes.filter((code) => code !== data.code)
             : this.appliedCodes.concat(data.code);
@@ -149,11 +154,8 @@ export class CartPage extends Component {
             discountTotal: getDiscountTotal(this.totalPrice, this.appliedCodes),
           };
         })
-        .on(CartSummaryEvents.BUY, () => {
-          this.buyComponent = new BuyModalComponent({});
-          this.buyComponent.render(document.body);
-          // this.buyComponent.on(...)
-          // handle close modal and destroy
+        .on(CartSummaryEventName.BUY, () => {
+          this.openBuyModal();
         });
     }
   }
@@ -177,7 +179,7 @@ export class CartPage extends Component {
   }
 
   updatePaginationFromUrl(): void {
-    const queryData = parseQuery(parseOptions) as QueryValues;
+    const queryData = parseQuery<QueryValues>(parseOptions);
 
     this.pagination = {
       ...this.pagination,
@@ -213,6 +215,7 @@ export class CartPage extends Component {
       cartProducts: this.getCartProductsPagination(),
       pagination: {
         ...this.pagination,
+        limit: Math.min(this.pagination.limit, productsLength),
         maxLimit: productsLength,
         maxPage,
       },
@@ -223,5 +226,23 @@ export class CartPage extends Component {
     this.totalPrice = getTotalPrice(this.cartState, this.products);
     this.totalQuantity = getTotalQuantity(this.cartState);
     this.discountTotal = getDiscountTotal(this.totalPrice, this.appliedCodes);
+  }
+
+  openBuyModal(): void {
+    this.buyComponent = new BuyModalComponent();
+    this.buyComponent.render(document.body);
+    // this.buyComponent.on(...)
+    // handle close modal and destroy
+  }
+
+  openModalViaBuyNow(): void {
+    const query = parseQuery<{ buy: number }>({
+      fields: { buy: ParseType.NUMBER },
+    });
+
+    if (query.buy) {
+      this.openBuyModal();
+      router.setPage("/" + RouterPaths.CART);
+    }
   }
 }

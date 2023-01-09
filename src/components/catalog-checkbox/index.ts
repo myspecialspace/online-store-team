@@ -1,7 +1,7 @@
 import { Component } from "../../helpers/component";
 import "./index.scss";
 import template from "./template.html";
-import { CatalogCheckboxEvent } from "./types";
+import { CatalogCheckboxEvents, CatalogCheckboxEventName } from "./types";
 
 export type State = {
   label: string;
@@ -10,7 +10,10 @@ export type State = {
   isChecked: boolean;
 };
 
-export class CatalogCheckboxComponent extends Component<State> {
+export class CatalogCheckboxComponent extends Component<
+  State,
+  CatalogCheckboxEvents
+> {
   $label: HTMLDivElement | null = null;
   $count: HTMLDivElement | null = null;
   $control: HTMLInputElement | null = null;
@@ -38,7 +41,7 @@ export class CatalogCheckboxComponent extends Component<State> {
 
   addEvents() {
     this.$control!.addEventListener("change", () => {
-      this.emit(CatalogCheckboxEvent.CHANGE, {
+      this.emit(CatalogCheckboxEventName.CHANGE, {
         checkbox: this.state,
         isChecked: this.$control!.checked,
       });

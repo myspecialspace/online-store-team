@@ -3,10 +3,11 @@ import "./index.scss";
 import template from "./template.html";
 import bigIcon from "../../assets/grid-big.png";
 import smallIcon from "../../assets/grid-small.png";
-import { CatalogPanelEvents, ViewType } from "./types";
+import { CatalogPanelEventName, CatalogPanelEvents, ViewType } from "./types";
 import { SortField, SortType } from "../../pages/catalog/types";
 
 type State = {
+  total: number;
   limit: number;
   view: ViewType;
   search: string;
@@ -14,7 +15,10 @@ type State = {
   sortField: SortField;
 };
 
-export class CatalogPanelComponent extends Component<State> {
+export class CatalogPanelComponent extends Component<
+  State,
+  CatalogPanelEvents
+> {
   $sort: HTMLSelectElement | null = null;
   $total: HTMLDivElement | null = null;
   $search: HTMLInputElement | null = null;
@@ -22,8 +26,8 @@ export class CatalogPanelComponent extends Component<State> {
   $buttonBig: HTMLInputElement | null = null;
   onButtonClick = (event: MouseEvent) => {
     const currentTarget = event.currentTarget as HTMLButtonElement;
-    const type = currentTarget.dataset.type;
-    this.emit(CatalogPanelEvents.VIEW, type);
+    const type = currentTarget.dataset.type as ViewType;
+    this.emit(CatalogPanelEventName.VIEW, type);
   };
 
   constructor(state: State) {
@@ -46,7 +50,8 @@ export class CatalogPanelComponent extends Component<State> {
   }
 
   onUpdated() {
-    this.$total!.textContent = "Found: " + this.state.limit;
+    this.$total!.textContent =
+      "Found " + this.state.limit + " of " + this.state.total;
 
     [this.$buttonBig, this.$buttonSmall].forEach((button) => {
       const type = button!.dataset.type;
@@ -59,11 +64,11 @@ export class CatalogPanelComponent extends Component<State> {
 
   addEvents() {
     this.$sort!.addEventListener("change", () => {
-      this.emit(CatalogPanelEvents.SORT, this.$sort!.value);
+      this.emit(CatalogPanelEventName.SORT, this.$sort!.value);
     });
 
     this.$search!.addEventListener("input", () => {
-      this.emit(CatalogPanelEvents.SEARCH, this.$search!.value);
+      this.emit(CatalogPanelEventName.SEARCH, this.$search!.value);
     });
 
     this.$buttonBig!.addEventListener("click", this.onButtonClick);

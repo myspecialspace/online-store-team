@@ -5,15 +5,21 @@ import {
   CatalogCheckboxComponent,
   State as Checkbox,
 } from "../catalog-checkbox";
-import { CatalogCheckboxEvent } from "../catalog-checkbox/types";
-import { CatalogCheckboxFilterEvent } from "./types";
+import { CatalogCheckboxEventName } from "../catalog-checkbox/types";
+import {
+  CatalogCheckboxFilterEventName,
+  CatalogCheckboxFilterEvents,
+} from "./types";
 
 export type State = {
   title: string;
   checkboxes: Checkbox[];
 };
 
-export class CatalogCheckboxFilterComponent extends Component<State> {
+export class CatalogCheckboxFilterComponent extends Component<
+  State,
+  CatalogCheckboxFilterEvents
+> {
   $title: HTMLSelectElement | null = null;
   $list: HTMLDivElement | null = null;
 
@@ -54,7 +60,7 @@ export class CatalogCheckboxFilterComponent extends Component<State> {
     this.state.checkboxes.forEach((checkbox) => {
       const checkboxComponent = new CatalogCheckboxComponent(checkbox);
       checkboxComponent.render(this.$list!);
-      checkboxComponent.on(CatalogCheckboxEvent.CHANGE, (data) => {
+      checkboxComponent.on(CatalogCheckboxEventName.CHANGE, (data) => {
         const label = data.checkbox.label;
 
         if (data.isChecked) {
@@ -64,7 +70,7 @@ export class CatalogCheckboxFilterComponent extends Component<State> {
         }
 
         const selected = Array.from(this.selectedSet);
-        this.emit(CatalogCheckboxFilterEvent.CHANGE, selected);
+        this.emit(CatalogCheckboxFilterEventName.CHANGE, selected);
       });
       this.checkboxComponents.push(checkboxComponent);
     });

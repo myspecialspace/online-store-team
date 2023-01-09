@@ -2,10 +2,10 @@ import { formatPrice } from "../../helpers/cart/price";
 import { Component } from "../../helpers/component";
 import { PromoCode } from "../../pages/cart/constants";
 import { AppliedCodeComponent } from "../applied-code";
-import { AppliedCodeEvents } from "../applied-code/types";
+import { AppliedCodeEventName } from "../applied-code/types";
 import "./index.scss";
 import template from "./template.html";
-import { CartSummaryEvents } from "./types";
+import { CartSummaryEventName, CartSummaryEvents } from "./types";
 
 interface State {
   quantity: number;
@@ -15,7 +15,7 @@ interface State {
   appliedCodes: PromoCode[];
 }
 
-export class CartSummaryComponent extends Component<State> {
+export class CartSummaryComponent extends Component<State, CartSummaryEvents> {
   $quantity: HTMLImageElement | null = null;
   $total: HTMLImageElement | null = null;
   $discountTotal: HTMLImageElement | null = null;
@@ -83,8 +83,8 @@ export class CartSummaryComponent extends Component<State> {
         isApplied: true,
       });
       component.render(this.$appliedCodesList!);
-      component.on(AppliedCodeEvents.CHANGE_CODE, (data) => {
-        this.emit(CartSummaryEvents.CHANGE_PROMO_CODE, data);
+      component.on(AppliedCodeEventName.CHANGE_CODE, (data) => {
+        this.emit(CartSummaryEventName.CHANGE_PROMO_CODE, data);
       });
       this.appliedCodesComponents.push(component);
     });
@@ -112,8 +112,8 @@ export class CartSummaryComponent extends Component<State> {
           hideButton: isApplied,
         });
         this.foundCodeComponent.render(this.$promoFoundCode!);
-        this.foundCodeComponent.on(AppliedCodeEvents.CHANGE_CODE, (data) => {
-          this.emit(CartSummaryEvents.CHANGE_PROMO_CODE, data);
+        this.foundCodeComponent.on(AppliedCodeEventName.CHANGE_CODE, (data) => {
+          this.emit(CartSummaryEventName.CHANGE_PROMO_CODE, data);
           this.$promoInput!.value = "";
           this.destroyFoundComponent();
         });
@@ -123,7 +123,7 @@ export class CartSummaryComponent extends Component<State> {
     });
 
     this.$buy!.addEventListener("click", () => {
-      this.emit(CartSummaryEvents.BUY);
+      this.emit(CartSummaryEventName.BUY);
     });
   }
 

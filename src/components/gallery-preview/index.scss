@@ -1,0 +1,12 @@
+.gallery-preview {
+  border: 1px solid #ddd;
+  width: 100px;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  .image {
+    height: 100px;
+    width: 98px;
+    object-fit: contain;
+  }
+}

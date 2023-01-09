@@ -2,15 +2,15 @@ import { Component } from "../../helpers/component";
 import { PromoCode, promoCodeInfo } from "../../pages/cart/constants";
 import "./index.scss";
 import template from "./template.html";
-import { AppliedCodeEvents } from "./types";
+import { AppliedCodeEventName, AppliedCodeEvents } from "./types";
 
-type State = {
+export type State = {
   code: PromoCode;
   isApplied: boolean;
   hideButton?: boolean;
 };
 
-export class AppliedCodeComponent extends Component<State> {
+export class AppliedCodeComponent extends Component<State, AppliedCodeEvents> {
   $desc: HTMLDivElement | null = null;
   $discount: HTMLDivElement | null = null;
   $button: HTMLButtonElement | null = null;
@@ -39,7 +39,7 @@ export class AppliedCodeComponent extends Component<State> {
 
   addEvents() {
     this.$button!.addEventListener("click", () => {
-      this.emit(AppliedCodeEvents.CHANGE_CODE, this.state);
+      this.emit(AppliedCodeEventName.CHANGE_CODE, this.state);
     });
   }
 }

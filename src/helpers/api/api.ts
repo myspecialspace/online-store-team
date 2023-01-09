@@ -1,4 +1,4 @@
-import { ProductsResponse } from "./types";
+import { ProductResponse, ProductsResponse } from "./types";
 
 class Api {
   readonly baseUrl = "https://dummyjson.com";
@@ -6,6 +6,10 @@ class Api {
   public getProducts() {
     const query = "?" + this.getQuery({ limit: "100" });
     return this.request<ProductsResponse>("/products" + query);
+  }
+
+  public getProduct(id: number) {
+    return this.request<ProductResponse>(`/products/${id}`);
   }
 
   private async request<TResponse>(
