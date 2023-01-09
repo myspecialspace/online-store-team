@@ -9,11 +9,15 @@ import { CartState } from "../../helpers/cart/types";
 import { Component } from "../../helpers/component";
 import { router } from "../../helpers/router";
 import { RouterPaths } from "../../helpers/router/constants";
-import { parseOptions } from "./constants";
+import { parseOptions, PromoCode } from "./constants";
 import "./index.scss";
 import template from "./template.html";
 import { CartProduct, QueryName, QueryValues } from "./types";
 import { State as CartListState } from "../../components/cart-list";
+import { getDiscountTotal, getTotalPrice } from "../../helpers/cart/price";
+import { getTotalQuantity } from "../../helpers/cart/count";
+import { CartSummaryEvents } from "../../components/cart-summary/types";
+import { BuyModalComponent } from "../../components/buy-modal";
 
 export class CartPage extends Component {
   cartState: CartState = cart.getCart();
@@ -21,6 +25,7 @@ export class CartPage extends Component {
   cartProducts: CartProduct[] = [];
   listComponent: CartListComponent | null = null;
   summaryComponent: CartSummaryComponent | null = null;
+  buyComponent: BuyModalComponent | null = null;
 
   $list: HTMLDivElement | null = null;
   $summary: HTMLDivElement | null = null;
@@ -32,6 +37,12 @@ export class CartPage extends Component {
     page: 1,
     maxPage: 1,
   };
+
+  appliedCodes: PromoCode[] = [];
+
+  totalQuantity: number = 0;
+  totalPrice: number = 0;
+  discountTotal: number = 0;
 
   constructor() {
     super({ template });
@@ -46,19 +57,28 @@ export class CartPage extends Component {
     this.products = (await api.getProducts()).products;
     this.cartProducts = this.getCartProductsPagination();
 
+    this.updateSummaryValues();
     this.updatePaginationFromUrl();
     this.listOrEmpty();
     this.updatePaginationList();
 
     cart.onChange((cartState) => {
-      // console.log("cart.onChange", cartState);
       this.cartState = cartState;
+      this.updateSummaryValues();
       this.updatePaginationList();
       this.listOrEmpty();
 
       if (this.listComponent) {
         this.listComponent.state = {
           cartProducts: this.getCartProductsPagination(),
+        };
+      }
+
+      if (this.summaryComponent) {
+        this.summaryComponent!.state = {
+          total: this.totalPrice,
+          quantity: this.totalQuantity,
+          discountTotal: this.discountTotal,
         };
       }
     });
@@ -110,8 +130,31 @@ export class CartPage extends Component {
 
   createSummary(): void {
     if (!this.summaryComponent) {
-      this.summaryComponent = new CartSummaryComponent({}); // TODO
+      this.summaryComponent = new CartSummaryComponent({
+        quantity: this.totalQuantity,
+        total: this.totalPrice,
+        discountTotal: this.totalPrice,
+        codes: Object.values(PromoCode),
+        appliedCodes: this.appliedCodes,
+      });
       this.summaryComponent.render(this.$summary!);
+      this.summaryComponent
+        .on(CartSummaryEvents.CHANGE_PROMO_CODE, (data) => {
+          this.appliedCodes = data.isApplied
+            ? this.appliedCodes.filter((code) => code !== data.code)
+            : this.appliedCodes.concat(data.code);
+
+          this.summaryComponent!.state = {
+            appliedCodes: this.appliedCodes,
+            discountTotal: getDiscountTotal(this.totalPrice, this.appliedCodes),
+          };
+        })
+        .on(CartSummaryEvents.BUY, () => {
+          this.buyComponent = new BuyModalComponent({});
+          this.buyComponent.render(document.body);
+          // this.buyComponent.on(...)
+          // handle close modal and destroy
+        });
     }
   }
 
@@ -174,5 +217,11 @@ export class CartPage extends Component {
         maxPage,
       },
     };
+  }
+
+  updateSummaryValues() {
+    this.totalPrice = getTotalPrice(this.cartState, this.products);
+    this.totalQuantity = getTotalQuantity(this.cartState);
+    this.discountTotal = getDiscountTotal(this.totalPrice, this.appliedCodes);
   }
 }

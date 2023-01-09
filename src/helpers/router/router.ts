@@ -44,6 +44,7 @@ class Router {
     }
 
     if (prevRoute?.name !== this._currentRoute.name) {
+      // TODO remove ?
       this._emitCallbacks();
     }
   }

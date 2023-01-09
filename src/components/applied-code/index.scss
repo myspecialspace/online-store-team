@@ -1,0 +1,17 @@
+.applied-code {
+  display: flex;
+
+  .drop {
+    visibility: hidden;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+
+  .desc,
+  .discount,
+  .drop {
+    margin-left: 8px;
+  }
+}
