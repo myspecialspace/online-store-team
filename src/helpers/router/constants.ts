@@ -1,7 +1,8 @@
 export enum RouterPaths {
   CATALOG = "catalog",
-  // PRODUCT_DETAILS = "product-details/:id",
-  DETAILS = "details",
+  DETAILS = "details/:id",
   CART = "cart",
   NOT_FOUND = "*",
 }
+
+export const detailsRoutePath = (id: number) => `details/${id}`;

@@ -1,5 +1,7 @@
 import { cart } from "../../helpers/cart";
 import { Component } from "../../helpers/component";
+import { router } from "../../helpers/router";
+import { detailsRoutePath } from "../../helpers/router/constants";
 import { CartProduct } from "../../pages/cart/types";
 import "./index.scss";
 import template from "./template.html";
@@ -8,6 +10,7 @@ type State = CartProduct;
 
 export class CartListItemComponent extends Component<State> {
   $index: HTMLDivElement | null = null;
+  $productLink: HTMLAnchorElement | null = null;
   $image: HTMLImageElement | null = null;
   $title: HTMLDivElement | null = null;
   $description: HTMLDivElement | null = null;
@@ -25,6 +28,7 @@ export class CartListItemComponent extends Component<State> {
 
   onMounted() {
     this.$index = this.query(".index");
+    this.$productLink = this.query(".product-link");
     this.$image = this.query(".image");
     this.$title = this.query(".title");
     this.$description = this.query(".description");
@@ -42,6 +46,7 @@ export class CartListItemComponent extends Component<State> {
 
   onUpdated() {
     this.$index!.textContent = String(this.state.index);
+    this.$productLink!.href = detailsRoutePath(this.state.product.id);
     this.$image!.src = this.state.product.images[0];
     this.$title!.textContent = this.state.product.title;
     this.$description!.textContent = this.state.product.description;
@@ -62,6 +67,11 @@ export class CartListItemComponent extends Component<State> {
 
     this.$decrement!.addEventListener("click", () => {
       cart.decrementItem(this.state.id);
+    });
+
+    this.$productLink!.addEventListener("click", (event) => {
+      event.preventDefault();
+      router.setPage(detailsRoutePath(this.state.product.id));
     });
   }
 }

@@ -36,6 +36,8 @@ export class CatalogFiltersComponent extends Component<State> {
   price: CatalogRangeFilterState | null = null;
   stock: CatalogRangeFilterState | null = null;
 
+  timeoutId = 0;
+
   constructor(state: State) {
     super({ template, state });
   }
@@ -125,6 +127,14 @@ export class CatalogFiltersComponent extends Component<State> {
 
     this.$copy!.addEventListener("click", () => {
       this.emit(CatalogFiltersEvent.COPY);
+
+      this.$copy!.textContent = "COPIED!";
+
+      clearTimeout(this.timeoutId);
+
+      this.timeoutId = setTimeout(() => {
+        this.$copy!.textContent = "COPY";
+      }, 2000);
     });
   }
 }

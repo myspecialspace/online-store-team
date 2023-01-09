@@ -24,17 +24,17 @@ class Router {
     });
   }
 
-  onChange(fn: RouterCallback) {
+  public onChange(fn: RouterCallback) {
     this._callbacks.push(fn);
   }
 
-  setPage(url: string, pushState = true): void {
+  public setPage(url: string, pushState = true): void {
     const prevRoute = this._currentRoute;
-    this._currentRoute = this._findPage(url);
+    this._currentRoute = this.findPage(url);
 
     if (this._currentRoute) {
       if (pushState) {
-        this._changeUrl(url);
+        this.changeUrl(url);
       }
     } else {
       this._currentRoute = {
@@ -45,39 +45,61 @@ class Router {
 
     if (prevRoute?.name !== this._currentRoute.name) {
       // TODO remove ?
-      this._emitCallbacks();
+      this.emitCallbacks();
     }
   }
 
-  getCurrentRoute() {
+  public getCurrentRoute() {
     return this._currentRoute;
   }
 
-  _emitCallbacks() {
+  public getId(): number {
+    const param = location.pathname.split("/")[2];
+    return parseInt(param);
+  }
+
+  private emitCallbacks() {
     this._callbacks.forEach((fn) => fn(this._currentRoute!));
   }
 
-  _findPage(url: string) {
+  private findPage(url: string) {
     const tail = url[0] === "/" ? url : "/" + url;
     const nextUrl = new URL(window.location.origin + tail);
     const pathname = nextUrl.pathname;
 
     const name = pathname.slice(1);
-    return this._config.find((item) => item.name === name) || null;
+    return (
+      this._config.find((item) => {
+        const nameWithId = item.name.includes("/:");
+        if (nameWithId) {
+          const itemHead = this.getHead(item.name);
+          const urlHead = this.getHead(name);
+          return itemHead === urlHead;
+        }
+        return item.name === name;
+      }) || null
+    );
   }
 
-  _changeUrl(url: string) {
+  private changeUrl(url: string) {
     if (url !== window.location.pathname + window.location.pathname) {
       window.history.pushState(null, "", url);
     }
   }
 
-  setInitialPage() {
+  private setInitialPage() {
     const { pathname, search } = window.location;
     const url =
       pathname === "/" ? this._config[0].name + search : pathname + search;
 
     this.setPage(url);
+  }
+
+  private getHead(url: string): string | undefined {
+    const matches = url.match(/^(.+)\//);
+    if (matches) {
+      return matches[1];
+    }
   }
 }
 

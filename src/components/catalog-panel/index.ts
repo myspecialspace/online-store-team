@@ -7,6 +7,7 @@ import { CatalogPanelEvents, ViewType } from "./types";
 import { SortField, SortType } from "../../pages/catalog/types";
 
 type State = {
+  total: number;
   limit: number;
   view: ViewType;
   search: string;
@@ -46,7 +47,8 @@ export class CatalogPanelComponent extends Component<State> {
   }
 
   onUpdated() {
-    this.$total!.textContent = "Found: " + this.state.limit;
+    this.$total!.textContent =
+      "Found " + this.state.limit + " of " + this.state.total;
 
     [this.$buttonBig, this.$buttonSmall].forEach((button) => {
       const type = button!.dataset.type;

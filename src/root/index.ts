@@ -65,12 +65,12 @@ export class RootComponent extends Component {
   addEvents() {
     this.$logo!.addEventListener("click", (event) => {
       event.preventDefault();
-      router.setPage(RouterPaths.CATALOG);
+      router.setPage("/" + RouterPaths.CATALOG);
     });
 
     this.$cart!.addEventListener("click", (event) => {
       event.preventDefault();
-      router.setPage(RouterPaths.CART);
+      router.setPage("/" + RouterPaths.CART);
     });
   }
 

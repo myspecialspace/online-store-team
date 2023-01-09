@@ -9,18 +9,19 @@
   }
 
   .pic {
-    width: 200px;
-    height: 300px;
+    width: 90%;
+    height: 170px;
     object-fit: contain;
   }
 
   .additional {
-    position: absolute;
-    left: 0;
-    top: 20px;
     visibility: hidden;
-    background-color: rgba(255, 255, 255, 0.687);
-    padding: 10px 20px;
-    border-radius: 6px;
+  }
+
+  .name {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

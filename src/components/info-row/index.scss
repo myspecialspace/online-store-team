@@ -1,0 +1,14 @@
+.info-row {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+
+  .info-header {
+    border-bottom: 1px solid #ddd;
+    padding: 6px 10px;
+    font-weight: 600;
+  }
+
+  .info-content {
+    padding: 6px 10px;
+  }
+}

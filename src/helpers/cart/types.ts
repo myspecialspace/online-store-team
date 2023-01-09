@@ -5,4 +5,4 @@ export interface CartItem {
   quantity: number;
 }
 
-export type ChangeFn = (cartState: CartState) => any;
+export type ChangeFn = (cartState: CartState) => void;

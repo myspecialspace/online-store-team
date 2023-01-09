@@ -2,7 +2,11 @@ import { CartListComponent } from "../../components/cart-list";
 import { CartListEvents } from "../../components/cart-list/types";
 import { CartSummaryComponent } from "../../components/cart-summary";
 import { api } from "../../helpers/api";
-import { parseQuery, queryStringify } from "../../helpers/api/router";
+import {
+  parseQuery,
+  ParseType,
+  queryStringify,
+} from "../../helpers/api/router";
 import { Product } from "../../helpers/api/types";
 import { cart } from "../../helpers/cart";
 import { CartState } from "../../helpers/cart/types";
@@ -61,6 +65,7 @@ export class CartPage extends Component {
     this.updatePaginationFromUrl();
     this.listOrEmpty();
     this.updatePaginationList();
+    this.openModalViaBuyNow();
 
     cart.onChange((cartState) => {
       this.cartState = cartState;
@@ -150,10 +155,7 @@ export class CartPage extends Component {
           };
         })
         .on(CartSummaryEvents.BUY, () => {
-          this.buyComponent = new BuyModalComponent({});
-          this.buyComponent.render(document.body);
-          // this.buyComponent.on(...)
-          // handle close modal and destroy
+          this.openBuyModal();
         });
     }
   }
@@ -177,7 +179,7 @@ export class CartPage extends Component {
   }
 
   updatePaginationFromUrl(): void {
-    const queryData = parseQuery(parseOptions) as QueryValues;
+    const queryData = parseQuery<QueryValues>(parseOptions);
 
     this.pagination = {
       ...this.pagination,
@@ -213,6 +215,7 @@ export class CartPage extends Component {
       cartProducts: this.getCartProductsPagination(),
       pagination: {
         ...this.pagination,
+        limit: Math.min(this.pagination.limit, productsLength),
         maxLimit: productsLength,
         maxPage,
       },
@@ -223,5 +226,23 @@ export class CartPage extends Component {
     this.totalPrice = getTotalPrice(this.cartState, this.products);
     this.totalQuantity = getTotalQuantity(this.cartState);
     this.discountTotal = getDiscountTotal(this.totalPrice, this.appliedCodes);
+  }
+
+  openBuyModal(): void {
+    this.buyComponent = new BuyModalComponent(null);
+    this.buyComponent.render(document.body);
+    // this.buyComponent.on(...)
+    // handle close modal and destroy
+  }
+
+  openModalViaBuyNow(): void {
+    const query = parseQuery<{ buy: number }>({
+      fields: { buy: ParseType.NUMBER },
+    });
+
+    if (query.buy) {
+      this.openBuyModal();
+      router.setPage("/" + RouterPaths.CART);
+    }
   }
 }
